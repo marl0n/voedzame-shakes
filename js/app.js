@@ -1,6 +1,6 @@
 /**
  * Voedzame Shakes App
- * Modern, simple recipe app
+ * Modern, simple recipe app with smart shopping list
  */
 
 // ===== RECIPES DATA =====
@@ -135,7 +135,9 @@ const recipes = [
 
 // ===== STATE =====
 let favorites = [];
-let shoppingList = [];
+// Shopping list now stores recipes with portions: [{recipeId: 1, portions: 2}, ...]
+let shoppingRecipes = [];
+let checkedIngredients = []; // Track which ingredients are checked off
 let currentView = 'recipes';
 let currentRecipe = null;
 
@@ -165,9 +167,11 @@ function init() {
 function loadFromStorage() {
     try {
         const storedFavorites = localStorage.getItem('voedzame-favorites');
-        const storedShopping = localStorage.getItem('voedzame-shopping');
+        const storedShoppingRecipes = localStorage.getItem('voedzame-shopping-recipes');
+        const storedChecked = localStorage.getItem('voedzame-checked');
         if (storedFavorites) favorites = JSON.parse(storedFavorites);
-        if (storedShopping) shoppingList = JSON.parse(storedShopping);
+        if (storedShoppingRecipes) shoppingRecipes = JSON.parse(storedShoppingRecipes);
+        if (storedChecked) checkedIngredients = JSON.parse(storedChecked);
     } catch (e) {
         console.error('Error loading from storage:', e);
     }
@@ -176,7 +180,8 @@ function loadFromStorage() {
 function saveToStorage() {
     try {
         localStorage.setItem('voedzame-favorites', JSON.stringify(favorites));
-        localStorage.setItem('voedzame-shopping', JSON.stringify(shoppingList));
+        localStorage.setItem('voedzame-shopping-recipes', JSON.stringify(shoppingRecipes));
+        localStorage.setItem('voedzame-checked', JSON.stringify(checkedIngredients));
     } catch (e) {
         console.error('Error saving to storage:', e);
     }
@@ -192,22 +197,15 @@ function setupEventListeners() {
 // ===== NAVIGATION =====
 function switchTab(tab) {
     currentView = tab;
-
-    // Update tabs
     tabBtns.forEach(btn => {
         btn.classList.toggle('active', btn.dataset.tab === tab);
     });
-
-    // Hide all views
     [recipesView, favoritesView, shoppingView, detailView].forEach(v => {
         v.classList.remove('active');
     });
-
-    // Show header and tabs
     header.style.display = '';
     tabBar.style.display = '';
 
-    // Show selected view
     switch(tab) {
         case 'recipes':
             recipesView.classList.add('active');
@@ -226,23 +224,14 @@ function switchTab(tab) {
 function openRecipeDetail(recipeId) {
     const recipe = recipes.find(r => r.id === recipeId);
     if (!recipe) return;
-
     currentRecipe = recipe;
-
-    // Hide header and tabs
     header.style.display = 'none';
     tabBar.style.display = 'none';
-
-    // Hide other views
     [recipesView, favoritesView, shoppingView].forEach(v => {
         v.classList.remove('active');
     });
-
-    // Show detail view
     detailView.classList.add('active');
     renderRecipeDetail(recipe);
-
-    // Scroll to top
     window.scrollTo(0, 0);
 }
 
@@ -250,8 +239,6 @@ function closeDetail() {
     header.style.display = '';
     tabBar.style.display = '';
     detailView.classList.remove('active');
-
-    // Return to previous view
     switchTab(currentView);
 }
 
@@ -263,14 +250,8 @@ function renderRecipes() {
 
 function renderFavorites() {
     const favoriteRecipes = recipes.filter(r => favorites.includes(r.id));
-
     if (favoriteRecipes.length === 0) {
-        favoritesList.innerHTML = `
-            <div class="empty-message">
-                Nog geen favorieten.<br>
-                Tik op het hartje bij een recept.
-            </div>
-        `;
+        favoritesList.innerHTML = `<div class="empty-message">Nog geen favorieten.<br>Tik op het hartje bij een recept.</div>`;
     } else {
         favoritesList.innerHTML = favoriteRecipes.map(recipe => createRecipeCard(recipe)).join('');
         addCardListeners(favoritesList);
@@ -308,6 +289,7 @@ function addCardListeners(container) {
 
 function renderRecipeDetail(recipe) {
     const isFavorite = favorites.includes(recipe.id);
+    const inShopping = shoppingRecipes.find(r => r.recipeId === recipe.id);
 
     detailView.innerHTML = `
         <div class="detail-header ${recipe.gradient}">
@@ -343,29 +325,48 @@ function renderRecipeDetail(recipe) {
                 `).join('')}
             </ul>
 
+            <div class="portion-selector">
+                <label>Aantal porties:</label>
+                <div class="portion-controls">
+                    <button class="portion-btn" onclick="adjustPortionSelector(-1)">−</button>
+                    <span id="portion-count">1</span>
+                    <button class="portion-btn" onclick="adjustPortionSelector(1)">+</button>
+                </div>
+            </div>
+
             <button class="add-shopping-btn" data-id="${recipe.id}">
                 🛒 Voeg toe aan boodschappen
             </button>
+            ${inShopping ? `<p class="already-in-list">Al op lijst: ${inShopping.portions}x</p>` : ''}
         </div>
     `;
 
-    // Add event listeners
     detailView.querySelector('.favorite-btn').addEventListener('click', (e) => {
         e.stopPropagation();
         toggleFavorite(recipe.id);
-        renderRecipeDetail(recipe); // Re-render to update heart
+        renderRecipeDetail(recipe);
     });
 
     detailView.querySelector('.add-shopping-btn').addEventListener('click', () => {
-        addToShoppingList(recipe);
+        const portions = parseInt(document.getElementById('portion-count').textContent);
+        addToShoppingList(recipe.id, portions);
     });
+}
+
+let selectedPortions = 1;
+
+function adjustPortionSelector(delta) {
+    const countEl = document.getElementById('portion-count');
+    let count = parseInt(countEl.textContent) + delta;
+    if (count < 1) count = 1;
+    if (count > 10) count = 10;
+    countEl.textContent = count;
 }
 
 // ===== FAVORITES =====
 function toggleFavorite(recipeId) {
     const index = favorites.indexOf(recipeId);
     const recipe = recipes.find(r => r.id === recipeId);
-
     if (index === -1) {
         favorites.push(recipeId);
         showToast(`${recipe.name} toegevoegd aan favorieten`);
@@ -373,93 +374,243 @@ function toggleFavorite(recipeId) {
         favorites.splice(index, 1);
         showToast(`${recipe.name} verwijderd uit favorieten`);
     }
-
     saveToStorage();
 }
 
-// ===== SHOPPING LIST =====
-function addToShoppingList(recipe) {
-    let addedCount = 0;
+// ===== SMART SHOPPING LIST =====
 
-    recipe.ingredients.forEach(ingredient => {
-        const exists = shoppingList.find(
-            item => item.name.toLowerCase() === ingredient.item.toLowerCase()
-        );
+// Parse amount string into value and unit
+function parseAmount(amountStr) {
+    const match = amountStr.match(/^([\d½¼¾]+(?:[\.,]\d+)?)\s*(.*)$/);
+    if (!match) return { value: 1, unit: amountStr, original: amountStr };
 
-        if (!exists) {
-            shoppingList.push({
-                id: Date.now() + Math.random(),
-                name: ingredient.item,
-                amount: ingredient.amount,
-                checked: false
-            });
-            addedCount++;
-        }
+    let value = match[1];
+    // Handle fractions
+    if (value === '½') value = 0.5;
+    else if (value === '¼') value = 0.25;
+    else if (value === '¾') value = 0.75;
+    else value = parseFloat(value.replace(',', '.'));
+
+    return { value, unit: match[2].trim(), original: amountStr };
+}
+
+// Format amount back to string
+function formatAmount(value, unit) {
+    // Round to 1 decimal if needed
+    let displayValue = Math.round(value * 10) / 10;
+    if (displayValue === Math.floor(displayValue)) {
+        displayValue = Math.floor(displayValue);
+    }
+    return unit ? `${displayValue} ${unit}` : `${displayValue}`;
+}
+
+// Calculate combined ingredients from all shopping recipes
+function calculateCombinedIngredients() {
+    const combined = {};
+
+    shoppingRecipes.forEach(sr => {
+        const recipe = recipes.find(r => r.id === sr.recipeId);
+        if (!recipe) return;
+
+        recipe.ingredients.forEach(ing => {
+            const key = ing.item.toLowerCase();
+            const parsed = parseAmount(ing.amount);
+
+            if (!combined[key]) {
+                combined[key] = {
+                    name: ing.item,
+                    amounts: {},
+                    sources: []
+                };
+            }
+
+            // Add to amounts by unit
+            const unitKey = parsed.unit || '_no_unit_';
+            if (!combined[key].amounts[unitKey]) {
+                combined[key].amounts[unitKey] = 0;
+            }
+            combined[key].amounts[unitKey] += parsed.value * sr.portions;
+
+            // Track which recipe contributes
+            const existingSource = combined[key].sources.find(s => s.recipeId === sr.recipeId);
+            if (!existingSource) {
+                combined[key].sources.push({
+                    recipeId: sr.recipeId,
+                    recipeName: recipe.name,
+                    emoji: recipe.emoji
+                });
+            }
+        });
     });
 
+    return combined;
+}
+
+function addToShoppingList(recipeId, portions = 1) {
+    const existing = shoppingRecipes.find(r => r.recipeId === recipeId);
+    const recipe = recipes.find(r => r.id === recipeId);
+
+    if (existing) {
+        existing.portions += portions;
+        showToast(`${recipe.name} nu ${existing.portions}x op lijst`);
+    } else {
+        shoppingRecipes.push({ recipeId, portions });
+        showToast(`${portions}x ${recipe.name} toegevoegd`);
+    }
+
     saveToStorage();
-
-    if (addedCount > 0) {
-        showToast(`${addedCount} ingrediënten toegevoegd`);
-    } else {
-        showToast('Alle ingrediënten staan al op je lijst');
-    }
+    renderRecipeDetail(recipe);
 }
 
-function renderShoppingList() {
-    if (shoppingList.length === 0) {
-        shoppingListEl.innerHTML = `
-            <div class="empty-message">
-                Je boodschappenlijst is leeg.<br>
-                Voeg ingrediënten toe vanuit een recept.
-            </div>
-        `;
-        document.getElementById('shopping-actions').style.display = 'none';
+function adjustRecipePortions(recipeId, delta) {
+    const existing = shoppingRecipes.find(r => r.recipeId === recipeId);
+    if (!existing) return;
+
+    existing.portions += delta;
+
+    if (existing.portions <= 0) {
+        removeRecipeFromShopping(recipeId);
     } else {
-        document.getElementById('shopping-actions').style.display = 'flex';
-
-        const sorted = [...shoppingList].sort((a, b) => a.checked - b.checked);
-
-        shoppingListEl.innerHTML = `
-            <div class="shopping-list">
-                ${sorted.map(item => `
-                    <div class="shopping-item ${item.checked ? 'checked' : ''}" data-id="${item.id}">
-                        <div class="shopping-checkbox ${item.checked ? 'checked' : ''}" data-id="${item.id}"></div>
-                        <span class="shopping-text">${item.name}</span>
-                        <span class="shopping-amount">${item.amount}</span>
-                    </div>
-                `).join('')}
-            </div>
-        `;
-
-        // Add checkbox listeners
-        shoppingListEl.querySelectorAll('.shopping-checkbox').forEach(checkbox => {
-            checkbox.addEventListener('click', () => {
-                toggleShoppingItem(checkbox.dataset.id);
-            });
-        });
-    }
-}
-
-function toggleShoppingItem(itemId) {
-    const item = shoppingList.find(i => i.id.toString() === itemId.toString());
-    if (item) {
-        item.checked = !item.checked;
         saveToStorage();
         renderShoppingList();
     }
 }
 
+function removeRecipeFromShopping(recipeId) {
+    const index = shoppingRecipes.findIndex(r => r.recipeId === recipeId);
+    if (index !== -1) {
+        const recipe = recipes.find(r => r.id === recipeId);
+        shoppingRecipes.splice(index, 1);
+        // Also remove checked ingredients that were only from this recipe
+        saveToStorage();
+        renderShoppingList();
+        showToast(`${recipe.name} verwijderd`);
+    }
+}
+
+function toggleIngredientCheck(ingredientName) {
+    const key = ingredientName.toLowerCase();
+    const index = checkedIngredients.indexOf(key);
+    if (index === -1) {
+        checkedIngredients.push(key);
+    } else {
+        checkedIngredients.splice(index, 1);
+    }
+    saveToStorage();
+    renderShoppingList();
+}
+
+function renderShoppingList() {
+    if (shoppingRecipes.length === 0) {
+        shoppingListEl.innerHTML = `
+            <div class="empty-message">
+                Je boodschappenlijst is leeg.<br>
+                Voeg shakes toe vanuit een recept.
+            </div>
+        `;
+        document.getElementById('shopping-actions').style.display = 'none';
+        return;
+    }
+
+    document.getElementById('shopping-actions').style.display = 'flex';
+
+    const combined = calculateCombinedIngredients();
+    const ingredientKeys = Object.keys(combined);
+
+    // Sort: unchecked first
+    ingredientKeys.sort((a, b) => {
+        const aChecked = checkedIngredients.includes(a);
+        const bChecked = checkedIngredients.includes(b);
+        if (aChecked && !bChecked) return 1;
+        if (!aChecked && bChecked) return -1;
+        return 0;
+    });
+
+    // Build ingredients HTML
+    let ingredientsHTML = ingredientKeys.map(key => {
+        const ing = combined[key];
+        const isChecked = checkedIngredients.includes(key);
+
+        // Format amounts (might have multiple units)
+        const amountParts = Object.entries(ing.amounts).map(([unit, value]) => {
+            if (unit === '_no_unit_') return formatAmount(value, '');
+            return formatAmount(value, unit);
+        });
+        const amountStr = amountParts.join(' + ');
+
+        return `
+            <div class="shopping-item ${isChecked ? 'checked' : ''}" data-ingredient="${key}">
+                <div class="shopping-checkbox ${isChecked ? 'checked' : ''}"
+                     onclick="toggleIngredientCheck('${key}')"></div>
+                <span class="shopping-text">${ing.name}</span>
+                <span class="shopping-amount">${amountStr}</span>
+            </div>
+        `;
+    }).join('');
+
+    // Build recipes section
+    let recipesHTML = shoppingRecipes.map(sr => {
+        const recipe = recipes.find(r => r.id === sr.recipeId);
+        if (!recipe) return '';
+
+        return `
+            <div class="shopping-recipe">
+                <span class="shopping-recipe-info">
+                    <span class="shopping-recipe-emoji">${recipe.emoji}</span>
+                    <span class="shopping-recipe-name">${recipe.name}</span>
+                </span>
+                <div class="shopping-recipe-controls">
+                    ${sr.portions === 1
+                        ? `<button class="portion-btn delete" onclick="removeRecipeFromShopping(${recipe.id})">✕</button>`
+                        : `<button class="portion-btn" onclick="adjustRecipePortions(${recipe.id}, -1)">−</button>`
+                    }
+                    <span class="portion-count">${sr.portions}</span>
+                    <button class="portion-btn" onclick="adjustRecipePortions(${recipe.id}, 1)">+</button>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    shoppingListEl.innerHTML = `
+        <div class="shopping-list">
+            ${ingredientsHTML}
+        </div>
+
+        <div class="shopping-recipes-section">
+            <h3 class="shopping-recipes-title">Shakes op deze lijst</h3>
+            ${recipesHTML}
+        </div>
+    `;
+}
+
 function copyShoppingList() {
-    const unchecked = shoppingList.filter(item => !item.checked);
-    const text = unchecked.map(item => `• ${item.name} - ${item.amount}`).join('\n');
+    const combined = calculateCombinedIngredients();
+    const lines = Object.values(combined)
+        .filter(ing => !checkedIngredients.includes(ing.name.toLowerCase()))
+        .map(ing => {
+            const amountParts = Object.entries(ing.amounts).map(([unit, value]) => {
+                if (unit === '_no_unit_') return formatAmount(value, '');
+                return formatAmount(value, unit);
+            });
+            return `• ${ing.name} - ${amountParts.join(' + ')}`;
+        });
+
+    // Add recipe summary
+    lines.push('');
+    lines.push('Shakes:');
+    shoppingRecipes.forEach(sr => {
+        const recipe = recipes.find(r => r.id === sr.recipeId);
+        if (recipe) {
+            lines.push(`${recipe.emoji} ${sr.portions}x ${recipe.name}`);
+        }
+    });
+
+    const text = lines.join('\n');
 
     if (navigator.clipboard) {
         navigator.clipboard.writeText(text).then(() => {
             showToast('Lijst gekopieerd!');
-        }).catch(() => {
-            fallbackCopy(text);
-        });
+        }).catch(() => fallbackCopy(text));
     } else {
         fallbackCopy(text);
     }
@@ -477,7 +628,8 @@ function fallbackCopy(text) {
 
 function clearShoppingList() {
     if (confirm('Weet je zeker dat je de lijst wilt legen?')) {
-        shoppingList = [];
+        shoppingRecipes = [];
+        checkedIngredients = [];
         saveToStorage();
         renderShoppingList();
         showToast('Lijst geleegd');
