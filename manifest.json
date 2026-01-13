@@ -2,7 +2,7 @@
   "name": "Voedzame Shakes",
   "short_name": "Shakes",
   "description": "Heerlijke, voedzame shake recepten voor elke dag",
-  "start_url": "/",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#f8f9fa",
   "theme_color": "#2d5a27",
@@ -65,14 +65,14 @@
       "name": "Favorieten",
       "short_name": "Favorieten",
       "description": "Bekijk je favoriete recepten",
-      "url": "/?view=favorites",
+      "url": "./?view=favorites",
       "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }]
     },
     {
       "name": "Boodschappen",
       "short_name": "Boodschappen",
       "description": "Bekijk je boodschappenlijst",
-      "url": "/?view=shopping",
+      "url": "./?view=shopping",
       "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }]
     }
   ]

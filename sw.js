@@ -3,22 +3,22 @@
  * Biedt offline ondersteuning en caching
  */
 
-const CACHE_NAME = 'voedzame-shakes-v1';
+const CACHE_NAME = 'voedzame-shakes-v2';
 const ASSETS_TO_CACHE = [
-    '/',
-    '/index.html',
-    '/css/style.css',
-    '/js/app.js',
-    '/recipes.json',
-    '/manifest.json',
-    '/icons/icon-72.png',
-    '/icons/icon-96.png',
-    '/icons/icon-128.png',
-    '/icons/icon-144.png',
-    '/icons/icon-152.png',
-    '/icons/icon-192.png',
-    '/icons/icon-384.png',
-    '/icons/icon-512.png'
+    './',
+    './index.html',
+    './css/style.css',
+    './js/app.js',
+    './recipes.json',
+    './manifest.json',
+    './icons/icon-72.png',
+    './icons/icon-96.png',
+    './icons/icon-128.png',
+    './icons/icon-144.png',
+    './icons/icon-152.png',
+    './icons/icon-192.png',
+    './icons/icon-384.png',
+    './icons/icon-512.png'
 ];
 
 // Install event - cache all assets
@@ -90,7 +90,7 @@ self.addEventListener('fetch', (event) => {
                     .catch(() => {
                         // If both cache and network fail, return offline page
                         if (event.request.mode === 'navigate') {
-                            return caches.match('/index.html');
+                            return caches.match('./index.html');
                         }
                         return new Response('Offline', {
                             status: 503,
