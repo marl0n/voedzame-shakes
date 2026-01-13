@@ -1,3 +1,29 @@
+// === CACHE BUSTER - MOET BOVENAAN STAAN ===
+(function() {
+    var CURRENT_VERSION = 2;
+
+    // Check bij pageshow (detecteert bfcache)
+    window.addEventListener('pageshow', function(event) {
+        // Als pagina uit bfcache komt, reload
+        if (event.persisted) {
+            window.location.reload();
+            return;
+        }
+
+        // Check of versie klopt
+        var expected = sessionStorage.getItem('expectedVersion');
+        if (expected && parseInt(expected) !== CURRENT_VERSION) {
+            // Verkeerde versie, ga terug naar index voor redirect
+            window.location.replace('index.html');
+            return;
+        }
+    });
+
+    // Voorkom bfcache door unload event
+    window.addEventListener('unload', function() {});
+})();
+// === EINDE CACHE BUSTER ===
+
 /**
  * Voedzame Shakes App
  * Een toegankelijke app voor voedzame shake recepten
