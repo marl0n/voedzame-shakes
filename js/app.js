@@ -292,6 +292,12 @@ function renderRecipeDetail(recipe) {
     const inShopping = shoppingRecipes.find(r => r.recipeId === recipe.id);
 
     detailView.innerHTML = `
+        <div class="detail-mini-header">
+            <button class="back-btn-mini" onclick="closeDetail()">←</button>
+            <span class="mini-header-emoji">${recipe.emoji}</span>
+            <span class="mini-header-title">${recipe.name}</span>
+        </div>
+
         <div class="detail-header ${recipe.gradient}">
             <button class="back-btn" onclick="closeDetail()">←</button>
             <span class="detail-emoji">${recipe.emoji}</span>
@@ -351,6 +357,36 @@ function renderRecipeDetail(recipe) {
         const portions = parseInt(document.getElementById('portion-count').textContent);
         addToShoppingList(recipe.id, portions);
     });
+
+    // Setup scroll listener for mini header
+    setupDetailScroll();
+}
+
+let detailScrollHandler = null;
+
+function setupDetailScroll() {
+    // Remove old handler if exists
+    if (detailScrollHandler) {
+        window.removeEventListener('scroll', detailScrollHandler);
+    }
+
+    const miniHeader = document.querySelector('.detail-mini-header');
+    const mainHeader = document.querySelector('.detail-header');
+
+    if (!miniHeader || !mainHeader) return;
+
+    detailScrollHandler = () => {
+        const scrollY = window.scrollY;
+        const threshold = 200; // When main header scrolls out of view
+
+        if (scrollY > threshold) {
+            miniHeader.classList.add('visible');
+        } else {
+            miniHeader.classList.remove('visible');
+        }
+    };
+
+    window.addEventListener('scroll', detailScrollHandler);
 }
 
 let selectedPortions = 1;
@@ -394,8 +430,23 @@ function parseAmount(amountStr) {
     return { value, unit: match[2].trim(), original: amountStr };
 }
 
-// Format amount back to string
+// Format amount back to string with smart unit conversion
 function formatAmount(value, unit) {
+    // Convert ml to liters for large amounts (round to 0.5L increments for shopping)
+    if (unit === 'ml' && value >= 750) {
+        const liters = value / 1000;
+        // Round to nearest 0.5L for practical shopping
+        const roundedLiters = Math.round(liters * 2) / 2;
+        return `${roundedLiters} L`;
+    }
+
+    // Convert grams to kg for very large amounts
+    if (unit === 'gram' && value >= 1000) {
+        const kg = value / 1000;
+        const roundedKg = Math.round(kg * 10) / 10;
+        return `${roundedKg} kg`;
+    }
+
     // Round to 1 decimal if needed
     let displayValue = Math.round(value * 10) / 10;
     if (displayValue === Math.floor(displayValue)) {
