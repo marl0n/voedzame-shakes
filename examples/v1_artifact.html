@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#4CAF50">
+    <title>Voedzame Shakes</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --green: #4CAF50;
+            --green-dark: #2E7D32;
+            --orange: #FF9800;
+            --orange-dark: #E65100;
+            --pink: #E91E63;
+            --blue: #2196F3;
+            --red: #f44336;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--green) 0%, var(--green-dark) 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .header p {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        /* Navigation tabs */
+        .nav-tabs {
+            display: flex;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 76px;
+            z-index: 99;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 14px;
+            text-align: center;
+            border: none;
+            background: white;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-tab.active {
+            color: var(--green-dark);
+            border-bottom-color: var(--green);
+            background: #f0fff0;
+        }
+
+        .nav-tab:hover {
+            background: #f5f5f5;
+        }
+
+        /* Main content */
+        .main-content {
+            padding: 15px;
+            padding-bottom: 100px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Recipe cards */
+        .recipe-card {
+            background: white;
+            border-radius: 16px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .recipe-card:active {
+            transform: scale(0.98);
+        }
+
+        .recipe-header {
+            padding: 16px 18px;
+            position: relative;
+        }
+
+        .recipe-number {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .recipe-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--green-dark);
+            margin-bottom: 6px;
+            padding-right: 40px;
+        }
+
+        .recipe-stats {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 600;
+            color: var(--orange-dark);
+        }
+
+        .stat-icon {
+            font-size: 1.1rem;
+        }
+
+        /* Ingredients */
+        .recipe-ingredients {
+            padding: 0 18px 12px;
+        }
+
+        .ingredients-label {
+            font-weight: 600;
+            color: #555;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+
+        .ingredient-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .ingredient {
+            background: #f5f5f5;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: #444;
+        }
+
+        /* Recipe tip */
+        .recipe-tip {
+            background: #FFF8E1;
+            padding: 12px 18px;
+            border-left: 4px solid var(--orange);
+            font-style: italic;
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        /* Actions bar */
+        .recipe-actions {
+            display: flex;
+            border-top: 1px solid #eee;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.95rem;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-btn:not(:last-child) {
+            border-right: 1px solid #eee;
+        }
+
+        .action-btn:hover {
+            background: #f9f9f9;
+        }
+
+        .action-btn.favorited {
+            color: var(--pink);
+        }
+
+        .action-btn.favorited .heart-icon {
+            animation: heartBeat 0.3s ease;
+        }
+
+        @keyframes heartBeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+        }
+
+        .action-btn.added {
+            color: var(--green);
+            background: #f0fff0;
+        }
+
+        /* Star rating */
+        .star-rating {
+            display: flex;
+            gap: 4px;
+        }
+
+        .star {
+            font-size: 1.4rem;
+            color: #ddd;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .star:hover,
+        .star.active {
+            color: #FFD700;
+            transform: scale(1.1);
+        }
+
+        /* Color themes for cards */
+        .recipe-card[data-color="banana"] .recipe-header { background: linear-gradient(135deg, #FFF8E1 0%, #FFECB3 100%); }
+        .recipe-card[data-color="banana"] .recipe-number { background: #FFB74D; }
+
+        .recipe-card[data-color="berry"] .recipe-header { background: linear-gradient(135deg, #FCE4EC 0%, #F8BBD0 100%); }
+        .recipe-card[data-color="berry"] .recipe-number { background: #EC407A; }
+
+        .recipe-card[data-color="avocado"] .recipe-header { background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%); }
+        .recipe-card[data-color="avocado"] .recipe-number { background: #66BB6A; }
+
+        .recipe-card[data-color="oat"] .recipe-header { background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%); }
+        .recipe-card[data-color="oat"] .recipe-number { background: #FFA726; }
+
+        .recipe-card[data-color="mango"] .recipe-header { background: linear-gradient(135deg, #FFF8E1 0%, #FFE082 100%); }
+        .recipe-card[data-color="mango"] .recipe-number { background: #FFCA28; }
+
+        .recipe-card[data-color="chocolate"] .recipe-header { background: linear-gradient(135deg, #EFEBE9 0%, #D7CCC8 100%); }
+        .recipe-card[data-color="chocolate"] .recipe-number { background: #8D6E63; }
+
+        .recipe-card[data-color="vanilla"] .recipe-header { background: linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%); }
+        .recipe-card[data-color="vanilla"] .recipe-number { background: #AB47BC; }
+
+        .recipe-card[data-color="strawberry"] .recipe-header { background: linear-gradient(135deg, #FFEBEE 0%, #FFCDD2 100%); }
+        .recipe-card[data-color="strawberry"] .recipe-number { background: #EF5350; }
+
+        /* Shopping list */
+        .shopping-section {
+            background: white;
+            border-radius: 16px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+        }
+
+        .shopping-header {
+            background: linear-gradient(135deg, var(--orange) 0%, var(--orange-dark) 100%);
+            color: white;
+            padding: 16px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .shopping-header h2 {
+            font-size: 1.2rem;
+        }
+
+        .shopping-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .shopping-action-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .shopping-action-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .shopping-list-items {
+            padding: 10px 0;
+        }
+
+        .shopping-category {
+            padding: 10px 18px;
+        }
+
+        .category-label {
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--orange-dark);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .shopping-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .shopping-item:last-child {
+            border-bottom: none;
+        }
+
+        .shopping-checkbox {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid #ddd;
+            margin-right: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .shopping-checkbox.checked {
+            background: var(--green);
+            border-color: var(--green);
+        }
+
+        .shopping-checkbox.checked::after {
+            content: '✓';
+            color: white;
+            font-weight: bold;
+        }
+
+        .shopping-item.checked .item-text {
+            text-decoration: line-through;
+            color: #aaa;
+        }
+
+        .item-text {
+            flex: 1;
+            font-size: 1rem;
+        }
+
+        .item-from {
+            font-size: 0.8rem;
+            color: #999;
+            margin-left: 10px;
+        }
+
+        .empty-list {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .empty-list-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        /* Tips section */
+        .tips-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+        }
+
+        .tips-header {
+            background: linear-gradient(135deg, var(--blue) 0%, #1565C0 100%);
+            color: white;
+            padding: 16px 18px;
+        }
+
+        .tips-header h2 {
+            font-size: 1.2rem;
+        }
+
+        .tips-content {
+            padding: 15px 18px;
+        }
+
+        .tip-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .tip-item:last-child {
+            border-bottom: none;
+        }
+
+        .tip-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--blue);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .tip-text {
+            font-size: 1rem;
+        }
+
+        .tip-text strong {
+            color: var(--blue);
+        }
+
+        /* How to section */
+        .howto-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+        }
+
+        .howto-header {
+            background: linear-gradient(135deg, var(--green) 0%, var(--green-dark) 100%);
+            color: white;
+            padding: 16px 18px;
+        }
+
+        .howto-header h2 {
+            font-size: 1.2rem;
+        }
+
+        .howto-steps {
+            padding: 15px 18px;
+        }
+
+        .howto-step {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .howto-step:last-child {
+            border-bottom: none;
+        }
+
+        .step-number {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--green);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 14px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .step-text {
+            font-size: 1.05rem;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #333;
+            color: white;
+            padding: 14px 24px;
+            border-radius: 30px;
+            font-size: 0.95rem;
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* Favorites filter */
+        .filter-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .filter-btn {
+            padding: 10px 18px;
+            border-radius: 25px;
+            border: 2px solid #ddd;
+            background: white;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .filter-btn.active {
+            border-color: var(--green);
+            background: var(--green);
+            color: white;
+        }
+
+        /* Offline indicator */
+        .offline-banner {
+            display: none;
+            background: #ff9800;
+            color: white;
+            text-align: center;
+            padding: 8px;
+            font-size: 0.9rem;
+        }
+
+        .offline-banner.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-banner" id="offlineBanner">
+        📴 Je bent offline - app werkt nog steeds!
+    </div>
+
+    <header class="header">
+        <h1>🥤 Voedzame Shakes</h1>
+        <p>Calorierijke eiwitshakes voor energie en kracht</p>
+    </header>
+
+    <nav class="nav-tabs">
+        <button class="nav-tab active" data-tab="recepten">🍹 Recepten</button>
+        <button class="nav-tab" data-tab="boodschappen">🛒 Boodschappen</button>
+        <button class="nav-tab" data-tab="tips">💡 Tips</button>
+    </nav>
+
+    <main class="main-content">
+        <!-- Recepten Tab -->
+        <div class="tab-content active" id="recepten">
+            <div class="filter-bar">
+                <button class="filter-btn active" data-filter="all">Alle recepten</button>
+                <button class="filter-btn" data-filter="favorites">❤️ Favorieten</button>
+                <button class="filter-btn" data-filter="highcal">🔥 Meeste kcal</button>
+            </div>
+            <div id="recipeContainer"></div>
+        </div>
+
+        <!-- Boodschappen Tab -->
+        <div class="tab-content" id="boodschappen">
+            <div class="shopping-section">
+                <div class="shopping-header">
+                    <h2>🛒 Mijn Boodschappenlijst</h2>
+                    <div class="shopping-actions">
+                        <button class="shopping-action-btn" onclick="copyShoppingList()">
+                            📋 Kopieer
+                        </button>
+                        <button class="shopping-action-btn" onclick="clearShoppingList()">
+                            🗑️ Leeg
+                        </button>
+                    </div>
+                </div>
+                <div class="shopping-list-items" id="shoppingListContainer">
+                    <div class="empty-list">
+                        <div class="empty-list-icon">🛒</div>
+                        <p>Je boodschappenlijst is leeg</p>
+                        <p style="font-size: 0.9rem; margin-top: 5px;">Voeg recepten toe via de knop "🛒 Voeg toe"</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tips Tab -->
+        <div class="tab-content" id="tips">
+            <div class="howto-card">
+                <div class="howto-header">
+                    <h2>📋 Zo maak je een shake</h2>
+                </div>
+                <div class="howto-steps">
+                    <div class="howto-step">
+                        <div class="step-number">1</div>
+                        <div class="step-text">Doe alle ingrediënten in de NutriBullet beker</div>
+                    </div>
+                    <div class="howto-step">
+                        <div class="step-number">2</div>
+                        <div class="step-text">Draai de beker op de motor en blend 30-60 seconden</div>
+                    </div>
+                    <div class="howto-step">
+                        <div class="step-number">3</div>
+                        <div class="step-text">Klaar! Drink direct of bewaar max 24 uur in de koelkast</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tips-card">
+                <div class="tips-header">
+                    <h2>⭐ Tips voor extra calorieën</h2>
+                </div>
+                <div class="tips-content">
+                    <div class="tip-item">
+                        <div class="tip-icon">+</div>
+                        <div class="tip-text">Schep eiwitpoeder = <strong>+100 kcal</strong> en <strong>+20g eiwit</strong></div>
+                    </div>
+                    <div class="tip-item">
+                        <div class="tip-icon">+</div>
+                        <div class="tip-text">Slagroom i.p.v. melk = <strong>+150 kcal</strong></div>
+                    </div>
+                    <div class="tip-item">
+                        <div class="tip-icon">+</div>
+                        <div class="tip-text">Extra lepel pindakaas = <strong>+100 kcal</strong></div>
+                    </div>
+                    <div class="tip-item">
+                        <div class="tip-icon">+</div>
+                        <div class="tip-text">Eetlepel olijfolie of kokosolie = <strong>+120 kcal</strong></div>
+                    </div>
+                    <div class="tip-item">
+                        <div class="tip-icon">!</div>
+                        <div class="tip-text">Kleine beetjes drinken door de dag bij weinig eetlust</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tips-card" style="border-left: 5px solid var(--pink);">
+                <div class="tips-header" style="background: linear-gradient(135deg, #E91E63 0%, #C2185B 100%);">
+                    <h2>💪 Maximale calorie-boost</h2>
+                </div>
+                <div class="tips-content" style="text-align: center; padding: 25px;">
+                    <p style="font-size: 1.1rem; margin-bottom: 10px;">
+                        Maak de <strong style="color: var(--pink);">Pindakaas-Choco Boost (#6)</strong>
+                    </p>
+                    <p style="margin-bottom: 10px;">met extra eiwitpoeder en slagroom:</p>
+                    <p style="font-size: 1.3rem; font-weight: bold; color: var(--pink);">
+                        Tot 770 kcal en 48g eiwit per shake!
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // Recipe data - easily editable!
+        const recipes = [
+            {
+                id: 1,
+                name: "Banaan-Pindakaas Shake",
+                color: "banana",
+                calories: 450,
+                protein: 22,
+                ingredients: [
+                    "1 rijpe banaan",
+                    "2 eetlepels pindakaas",
+                    "200 ml volle melk",
+                    "100 g Griekse yoghurt",
+                    "1 eetlepel honing"
+                ],
+                tip: "Voeg eiwitpoeder toe voor +20g eiwit"
+            },
+            {
+                id: 2,
+                name: "Rode Vruchten Power",
+                color: "berry",
+                calories: 380,
+                protein: 24,
+                ingredients: [
+                    "150 g diepvries rode vruchten",
+                    "150 g Griekse yoghurt",
+                    "150 ml volle melk",
+                    "2 eetlepels havermout",
+                    "1 eetlepel honing"
+                ],
+                tip: "5 min ontdooien voor makkelijker blenden"
+            },
+            {
+                id: 3,
+                name: "Chocolade-Avocado Dream",
+                color: "avocado",
+                calories: 480,
+                protein: 18,
+                ingredients: [
+                    "1/2 rijpe avocado",
+                    "1 eetlepel cacaopoeder",
+                    "200 ml volle melk",
+                    "1 banaan",
+                    "1 eetlepel honing"
+                ],
+                tip: "Extra romig door de avocado!"
+            },
+            {
+                id: 4,
+                name: "Havermout Ontbijtshake",
+                color: "oat",
+                calories: 420,
+                protein: 20,
+                ingredients: [
+                    "1 banaan",
+                    "3 eetlepels havermout",
+                    "30g walnoten",
+                    "150 g vanilleyoghurt",
+                    "150 ml volle melk"
+                ],
+                tip: "Perfect als ontbijt!"
+            },
+            {
+                id: 5,
+                name: "Tropische Mango Shake",
+                color: "mango",
+                calories: 400,
+                protein: 20,
+                ingredients: [
+                    "150 g volle kwark",
+                    "100 g mango (vers of diepvries)",
+                    "100 ml kokosmelk",
+                    "100 ml volle melk",
+                    "1 eetlepel honing"
+                ],
+                tip: "Diepvriesmango werkt ook prima"
+            },
+            {
+                id: 6,
+                name: "Pindakaas-Choco Boost",
+                color: "chocolate",
+                calories: 520,
+                protein: 28,
+                ingredients: [
+                    "2 eetlepels pindakaas",
+                    "1 eetlepel cacaopoeder",
+                    "1 banaan",
+                    "200 ml volle melk",
+                    "optioneel: eiwitpoeder"
+                ],
+                tip: "Meeste calorieën - ideaal voor gewichtstoename!"
+            },
+            {
+                id: 7,
+                name: "Vanille-Walnoot Shake",
+                color: "vanilla",
+                calories: 400,
+                protein: 22,
+                ingredients: [
+                    "150 g vanilleyoghurt",
+                    "30g walnoten",
+                    "1 banaan",
+                    "150 ml volle melk",
+                    "snufje kaneel"
+                ],
+                tip: "Rijk aan omega-3 vetzuren"
+            },
+            {
+                id: 8,
+                name: "Aardbei-Banaan Klassiek",
+                color: "strawberry",
+                calories: 350,
+                protein: 18,
+                ingredients: [
+                    "100 g aardbeien (vers of diepvries)",
+                    "1 banaan",
+                    "150 g Griekse yoghurt",
+                    "100 ml volle melk",
+                    "1 eetlepel honing"
+                ],
+                tip: "Licht en verfrissend - goed bij weinig eetlust"
+            }
+        ];
+
+        // State management
+        let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+        let ratings = JSON.parse(localStorage.getItem('ratings') || '{}');
+        let shoppingList = JSON.parse(localStorage.getItem('shoppingList') || '[]');
+        let checkedItems = JSON.parse(localStorage.getItem('checkedItems') || '[]');
+        let currentFilter = 'all';
+
+        // Save state
+        function saveState() {
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+            localStorage.setItem('ratings', JSON.stringify(ratings));
+            localStorage.setItem('shoppingList', JSON.stringify(shoppingList));
+            localStorage.setItem('checkedItems', JSON.stringify(checkedItems));
+        }
+
+        // Show toast notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2500);
+        }
+
+        // Toggle favorite
+        function toggleFavorite(id) {
+            const index = favorites.indexOf(id);
+            if (index > -1) {
+                favorites.splice(index, 1);
+                showToast('❤️ Verwijderd uit favorieten');
+            } else {
+                favorites.push(id);
+                showToast('❤️ Toegevoegd aan favorieten!');
+            }
+            saveState();
+            renderRecipes();
+        }
+
+        // Set rating
+        function setRating(id, rating) {
+            ratings[id] = rating;
+            saveState();
+            showToast(`⭐ ${rating} sterren gegeven!`);
+            renderRecipes();
+        }
+
+        // Add to shopping list
+        function addToShoppingList(id) {
+            const recipe = recipes.find(r => r.id === id);
+            if (!recipe) return;
+
+            let added = 0;
+            recipe.ingredients.forEach(ing => {
+                const key = `${id}-${ing}`;
+                if (!shoppingList.find(item => item.key === key)) {
+                    shoppingList.push({
+                        key: key,
+                        recipeId: id,
+                        recipeName: recipe.name,
+                        ingredient: ing
+                    });
+                    added++;
+                }
+            });
+
+            saveState();
+            if (added > 0) {
+                showToast(`🛒 ${added} ingrediënten toegevoegd!`);
+            } else {
+                showToast('✓ Ingrediënten staan al op de lijst');
+            }
+            renderShoppingList();
+        }
+
+        // Toggle checked item
+        function toggleChecked(key) {
+            const index = checkedItems.indexOf(key);
+            if (index > -1) {
+                checkedItems.splice(index, 1);
+            } else {
+                checkedItems.push(key);
+            }
+            saveState();
+            renderShoppingList();
+        }
+
+        // Clear shopping list
+        function clearShoppingList() {
+            if (confirm('Weet je zeker dat je de boodschappenlijst wilt legen?')) {
+                shoppingList = [];
+                checkedItems = [];
+                saveState();
+                renderShoppingList();
+                showToast('🗑️ Boodschappenlijst geleegd');
+            }
+        }
+
+        // Copy shopping list
+        function copyShoppingList() {
+            if (shoppingList.length === 0) {
+                showToast('De lijst is leeg');
+                return;
+            }
+
+            // Group by category
+            const categories = {};
+            shoppingList.forEach(item => {
+                const cat = getCategory(item.ingredient);
+                if (!categories[cat]) categories[cat] = [];
+                if (!categories[cat].includes(item.ingredient)) {
+                    categories[cat].push(item.ingredient);
+                }
+            });
+
+            let text = "🛒 BOODSCHAPPENLIJST\n\n";
+            Object.keys(categories).forEach(cat => {
+                text += `${cat.toUpperCase()}:\n`;
+                categories[cat].forEach(ing => {
+                    const checked = checkedItems.includes(shoppingList.find(i => i.ingredient === ing)?.key);
+                    text += `${checked ? '✓' : '☐'} ${ing}\n`;
+                });
+                text += '\n';
+            });
+
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('📋 Gekopieerd naar klembord!');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showToast('📋 Gekopieerd naar klembord!');
+            });
+        }
+
+        // Get ingredient category
+        function getCategory(ingredient) {
+            const ing = ingredient.toLowerCase();
+            if (ing.includes('banaan') || ing.includes('mango') || ing.includes('aardbei') ||
+                ing.includes('vruchten') || ing.includes('avocado')) return '🍎 Fruit';
+            if (ing.includes('melk') || ing.includes('yoghurt') || ing.includes('kwark')) return '🥛 Zuivel';
+            if (ing.includes('pindakaas') || ing.includes('walnoten')) return '🥜 Noten';
+            return '🫙 Overig';
+        }
+
+        // Render recipes
+        function renderRecipes() {
+            const container = document.getElementById('recipeContainer');
+            let filteredRecipes = [...recipes];
+
+            if (currentFilter === 'favorites') {
+                filteredRecipes = filteredRecipes.filter(r => favorites.includes(r.id));
+            } else if (currentFilter === 'highcal') {
+                filteredRecipes.sort((a, b) => b.calories - a.calories);
+            }
+
+            if (filteredRecipes.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-list" style="margin-top: 50px;">
+                        <div class="empty-list-icon">❤️</div>
+                        <p>Geen favorieten gevonden</p>
+                        <p style="font-size: 0.9rem; margin-top: 5px;">Tik op het hartje om een recept als favoriet te markeren</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filteredRecipes.map(recipe => {
+                const isFavorite = favorites.includes(recipe.id);
+                const rating = ratings[recipe.id] || 0;
+                const inList = shoppingList.some(item => item.recipeId === recipe.id);
+
+                return `
+                    <div class="recipe-card" data-color="${recipe.color}">
+                        <div class="recipe-header">
+                            <div class="recipe-number">${recipe.id}</div>
+                            <h3 class="recipe-title">${recipe.name}</h3>
+                            <div class="recipe-stats">
+                                <div class="stat">
+                                    <span class="stat-icon">🔥</span>
+                                    <span>${recipe.calories} kcal</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-icon">💪</span>
+                                    <span>${recipe.protein}g eiwit</span>
+                                </div>
+                            </div>
+                            <div class="star-rating">
+                                ${[1,2,3,4,5].map(i => `
+                                    <span class="star ${i <= rating ? 'active' : ''}" onclick="setRating(${recipe.id}, ${i})">★</span>
+                                `).join('')}
+                            </div>
+                        </div>
+                        <div class="recipe-ingredients">
+                            <div class="ingredients-label">Ingrediënten:</div>
+                            <div class="ingredient-list">
+                                ${recipe.ingredients.map(ing => `
+                                    <span class="ingredient">${ing}</span>
+                                `).join('')}
+                            </div>
+                        </div>
+                        <div class="recipe-tip">💡 ${recipe.tip}</div>
+                        <div class="recipe-actions">
+                            <button class="action-btn ${isFavorite ? 'favorited' : ''}" onclick="toggleFavorite(${recipe.id})">
+                                <span class="heart-icon">${isFavorite ? '❤️' : '🤍'}</span>
+                                ${isFavorite ? 'Favoriet' : 'Favoriet'}
+                            </button>
+                            <button class="action-btn ${inList ? 'added' : ''}" onclick="addToShoppingList(${recipe.id})">
+                                🛒 ${inList ? 'Toegevoegd' : 'Voeg toe'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Render shopping list
+        function renderShoppingList() {
+            const container = document.getElementById('shoppingListContainer');
+
+            if (shoppingList.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-list">
+                        <div class="empty-list-icon">🛒</div>
+                        <p>Je boodschappenlijst is leeg</p>
+                        <p style="font-size: 0.9rem; margin-top: 5px;">Voeg recepten toe via de knop "🛒 Voeg toe"</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Group by category
+            const categories = {};
+            shoppingList.forEach(item => {
+                const cat = getCategory(item.ingredient);
+                if (!categories[cat]) categories[cat] = [];
+                // Avoid duplicates
+                if (!categories[cat].find(i => i.ingredient === item.ingredient)) {
+                    categories[cat].push(item);
+                }
+            });
+
+            container.innerHTML = Object.keys(categories).map(cat => `
+                <div class="shopping-category">
+                    <div class="category-label">${cat}</div>
+                    ${categories[cat].map(item => {
+                        const checked = checkedItems.includes(item.key);
+                        return `
+                            <div class="shopping-item ${checked ? 'checked' : ''}" onclick="toggleChecked('${item.key}')">
+                                <div class="shopping-checkbox ${checked ? 'checked' : ''}"></div>
+                                <span class="item-text">${item.ingredient}</span>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `).join('');
+        }
+
+        // Tab navigation
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.tab).classList.add('active');
+            });
+        });
+
+        // Filter buttons
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFilter = btn.dataset.filter;
+                renderRecipes();
+            });
+        });
+
+        // Offline detection
+        function updateOnlineStatus() {
+            const banner = document.getElementById('offlineBanner');
+            if (!navigator.onLine) {
+                banner.classList.add('show');
+            } else {
+                banner.classList.remove('show');
+            }
+        }
+
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+
+        // Register service worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(err => {
+                console.log('Service worker registration failed:', err);
+            });
+        }
+
+        // Initial render
+        renderRecipes();
+        renderShoppingList();
+        updateOnlineStatus();
+    </script>
+</body>
+</html>
