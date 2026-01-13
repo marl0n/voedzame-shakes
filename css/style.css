@@ -494,6 +494,22 @@ button, a, input, select, textarea {
     box-shadow: var(--shadow);
 }
 
+/* Aisle headers for supermarket grouping */
+.aisle-header {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    padding: 14px 20px 8px;
+    background: #f8f8f8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid #eee;
+}
+
+.aisle-header:first-child {
+    border-radius: var(--radius) var(--radius) 0 0;
+}
+
 .shopping-item {
     display: flex;
     align-items: center;

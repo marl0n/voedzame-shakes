@@ -3,6 +3,58 @@
  * Modern, simple recipe app with smart shopping list
  */
 
+// ===== INGREDIENT DATABASE =====
+// Gangpad volgorde zoals in supermarkt
+const aisleOrder = ["Fruit", "Zuivel", "Ontbijt", "Noten", "Zoet", "Bakken", "Diepvries", "Speciaal"];
+
+const aisleEmojis = {
+    "Fruit": "🍎",
+    "Zuivel": "🥛",
+    "Ontbijt": "🥣",
+    "Noten": "🥜",
+    "Zoet": "🍯",
+    "Bakken": "🧁",
+    "Diepvries": "❄️",
+    "Speciaal": "✨"
+};
+
+const ingredientDB = {
+    // Fruit
+    "banaan": { aisle: "Fruit", order: 1 },
+    "aardbeien": { aisle: "Fruit", order: 2 },
+    "mango": { aisle: "Fruit", order: 3 },
+    "avocado": { aisle: "Fruit", order: 4 },
+    "appel": { aisle: "Fruit", order: 5 },
+    "peer": { aisle: "Fruit", order: 6 },
+
+    // Zuivel
+    "volle melk": { aisle: "Zuivel", order: 1 },
+    "griekse yoghurt": { aisle: "Zuivel", order: 2 },
+    "kwark": { aisle: "Zuivel", order: 3 },
+    "kokosmelk": { aisle: "Zuivel", order: 4 },
+    "amandelmelk": { aisle: "Zuivel", order: 5 },
+
+    // Ontbijt
+    "havermout": { aisle: "Ontbijt", order: 1 },
+
+    // Noten
+    "pindakaas": { aisle: "Noten", order: 1 },
+    "amandelboter": { aisle: "Noten", order: 2 },
+    "walnoten": { aisle: "Noten", order: 3 },
+    "geraspte kokos": { aisle: "Noten", order: 4 },
+
+    // Zoet
+    "honing": { aisle: "Zoet", order: 1 },
+
+    // Bakken
+    "cacaopoeder": { aisle: "Bakken", order: 1 },
+    "vanille-extract": { aisle: "Bakken", order: 2 },
+    "kaneel": { aisle: "Bakken", order: 3 },
+
+    // Diepvries
+    "rode vruchten": { aisle: "Diepvries", order: 1 }
+};
+
 // ===== RECIPES DATA =====
 const recipes = [
     {
@@ -13,12 +65,12 @@ const recipes = [
         kcal: 650,
         protein: 28,
         ingredients: [
-            { item: "Volle melk", amount: "300 ml" },
-            { item: "Rijpe banaan", amount: "1 grote" },
-            { item: "Pindakaas", amount: "2 eetlepels" },
-            { item: "Griekse yoghurt", amount: "100 gram" },
-            { item: "Honing", amount: "1 eetlepel" },
-            { item: "Havermout", amount: "30 gram" }
+            { ingredient: "volle melk", amount: 300, unit: "ml" },
+            { ingredient: "banaan", display: "Rijpe banaan", amount: 1, unit: "stuk" },
+            { ingredient: "pindakaas", amount: 2, unit: "el" },
+            { ingredient: "griekse yoghurt", amount: 100, unit: "g" },
+            { ingredient: "honing", amount: 1, unit: "el" },
+            { ingredient: "havermout", amount: 30, unit: "g" }
         ]
     },
     {
@@ -29,12 +81,12 @@ const recipes = [
         kcal: 580,
         protein: 24,
         ingredients: [
-            { item: "Volle melk", amount: "250 ml" },
-            { item: "Rijpe avocado", amount: "½ stuks" },
-            { item: "Cacaopoeder", amount: "2 eetlepels" },
-            { item: "Kwark", amount: "100 gram" },
-            { item: "Honing", amount: "2 eetlepels" },
-            { item: "Vanille-extract", amount: "1 theelepel" }
+            { ingredient: "volle melk", amount: 250, unit: "ml" },
+            { ingredient: "avocado", display: "Rijpe avocado", amount: 0.5, unit: "stuk" },
+            { ingredient: "cacaopoeder", amount: 2, unit: "el" },
+            { ingredient: "kwark", amount: 100, unit: "g" },
+            { ingredient: "honing", amount: 2, unit: "el" },
+            { ingredient: "vanille-extract", amount: 1, unit: "tl" }
         ]
     },
     {
@@ -45,11 +97,11 @@ const recipes = [
         kcal: 520,
         protein: 26,
         ingredients: [
-            { item: "Volle melk", amount: "250 ml" },
-            { item: "Diepvries rode vruchten", amount: "150 gram" },
-            { item: "Griekse yoghurt", amount: "150 gram" },
-            { item: "Honing", amount: "2 eetlepels" },
-            { item: "Amandelboter", amount: "1 eetlepel" }
+            { ingredient: "volle melk", amount: 250, unit: "ml" },
+            { ingredient: "rode vruchten", display: "Diepvries rode vruchten", amount: 150, unit: "g" },
+            { ingredient: "griekse yoghurt", amount: 150, unit: "g" },
+            { ingredient: "honing", amount: 2, unit: "el" },
+            { ingredient: "amandelboter", amount: 1, unit: "el" }
         ]
     },
     {
@@ -60,12 +112,12 @@ const recipes = [
         kcal: 590,
         protein: 22,
         ingredients: [
-            { item: "Kokosmelk", amount: "200 ml" },
-            { item: "Volle melk", amount: "100 ml" },
-            { item: "Mango (vers of diepvries)", amount: "150 gram" },
-            { item: "Griekse yoghurt", amount: "100 gram" },
-            { item: "Honing", amount: "1 eetlepel" },
-            { item: "Geraspte kokos", amount: "2 eetlepels" }
+            { ingredient: "kokosmelk", amount: 200, unit: "ml" },
+            { ingredient: "volle melk", amount: 100, unit: "ml" },
+            { ingredient: "mango", display: "Mango (vers of diepvries)", amount: 150, unit: "g" },
+            { ingredient: "griekse yoghurt", amount: 100, unit: "g" },
+            { ingredient: "honing", amount: 1, unit: "el" },
+            { ingredient: "geraspte kokos", amount: 2, unit: "el" }
         ]
     },
     {
@@ -76,12 +128,12 @@ const recipes = [
         kcal: 540,
         protein: 20,
         ingredients: [
-            { item: "Volle melk", amount: "300 ml" },
-            { item: "Appel (geschild)", amount: "1 grote" },
-            { item: "Kwark", amount: "100 gram" },
-            { item: "Havermout", amount: "40 gram" },
-            { item: "Kaneel", amount: "1 theelepel" },
-            { item: "Honing", amount: "2 eetlepels" }
+            { ingredient: "volle melk", amount: 300, unit: "ml" },
+            { ingredient: "appel", display: "Appel (geschild)", amount: 1, unit: "stuk" },
+            { ingredient: "kwark", amount: 100, unit: "g" },
+            { ingredient: "havermout", amount: 40, unit: "g" },
+            { ingredient: "kaneel", amount: 1, unit: "tl" },
+            { ingredient: "honing", amount: 2, unit: "el" }
         ]
     },
     {
@@ -92,12 +144,12 @@ const recipes = [
         kcal: 620,
         protein: 25,
         ingredients: [
-            { item: "Volle melk", amount: "300 ml" },
-            { item: "Walnoten", amount: "30 gram" },
-            { item: "Griekse yoghurt", amount: "100 gram" },
-            { item: "Vanille-extract", amount: "1 theelepel" },
-            { item: "Honing", amount: "2 eetlepels" },
-            { item: "Banaan", amount: "½ stuks" }
+            { ingredient: "volle melk", amount: 300, unit: "ml" },
+            { ingredient: "walnoten", amount: 30, unit: "g" },
+            { ingredient: "griekse yoghurt", amount: 100, unit: "g" },
+            { ingredient: "vanille-extract", amount: 1, unit: "tl" },
+            { ingredient: "honing", amount: 2, unit: "el" },
+            { ingredient: "banaan", amount: 0.5, unit: "stuk" }
         ]
     },
     {
@@ -108,11 +160,11 @@ const recipes = [
         kcal: 560,
         protein: 24,
         ingredients: [
-            { item: "Volle melk", amount: "300 ml" },
-            { item: "Aardbeien", amount: "150 gram" },
-            { item: "Havermout", amount: "50 gram" },
-            { item: "Griekse yoghurt", amount: "100 gram" },
-            { item: "Honing", amount: "1 eetlepel" }
+            { ingredient: "volle melk", amount: 300, unit: "ml" },
+            { ingredient: "aardbeien", amount: 150, unit: "g" },
+            { ingredient: "havermout", amount: 50, unit: "g" },
+            { ingredient: "griekse yoghurt", amount: 100, unit: "g" },
+            { ingredient: "honing", amount: 1, unit: "el" }
         ]
     },
     {
@@ -123,21 +175,20 @@ const recipes = [
         kcal: 550,
         protein: 23,
         ingredients: [
-            { item: "Volle melk", amount: "250 ml" },
-            { item: "Rijpe peer", amount: "1 grote" },
-            { item: "Amandelboter", amount: "2 eetlepels" },
-            { item: "Kwark", amount: "100 gram" },
-            { item: "Honing", amount: "1 eetlepel" },
-            { item: "Amandelmelk", amount: "50 ml" }
+            { ingredient: "volle melk", amount: 250, unit: "ml" },
+            { ingredient: "peer", display: "Rijpe peer", amount: 1, unit: "stuk" },
+            { ingredient: "amandelboter", amount: 2, unit: "el" },
+            { ingredient: "kwark", amount: 100, unit: "g" },
+            { ingredient: "honing", amount: 1, unit: "el" },
+            { ingredient: "amandelmelk", amount: 50, unit: "ml" }
         ]
     }
 ];
 
 // ===== STATE =====
 let favorites = [];
-// Shopping list now stores recipes with portions: [{recipeId: 1, portions: 2}, ...]
 let shoppingRecipes = [];
-let checkedIngredients = []; // Track which ingredients are checked off
+let checkedIngredients = [];
 let currentView = 'recipes';
 let currentRecipe = null;
 
@@ -287,6 +338,17 @@ function addCardListeners(container) {
     });
 }
 
+// Format ingredient for display in recipe detail
+function formatIngredientDisplay(ing) {
+    const name = ing.display || capitalizeFirst(ing.ingredient);
+    return `${name} - ${formatAmount(ing.amount, ing.unit)}`;
+}
+
+// Capitalize first letter
+function capitalizeFirst(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 function renderRecipeDetail(recipe) {
     const isFavorite = favorites.includes(recipe.id);
     const inShopping = shoppingRecipes.find(r => r.recipeId === recipe.id);
@@ -325,8 +387,8 @@ function renderRecipeDetail(recipe) {
             <ul class="ingredients-list">
                 ${recipe.ingredients.map(ing => `
                     <li class="ingredient-item">
-                        <span class="ingredient-name">${ing.item}</span>
-                        <span class="ingredient-amount">${ing.amount}</span>
+                        <span class="ingredient-name">${ing.display || capitalizeFirst(ing.ingredient)}</span>
+                        <span class="ingredient-amount">${formatAmount(ing.amount, ing.unit)}</span>
                     </li>
                 `).join('')}
             </ul>
@@ -358,14 +420,12 @@ function renderRecipeDetail(recipe) {
         addToShoppingList(recipe.id, portions);
     });
 
-    // Setup scroll listener for mini header
     setupDetailScroll();
 }
 
 let detailScrollHandler = null;
 
 function setupDetailScroll() {
-    // Remove old handler if exists
     if (detailScrollHandler) {
         window.removeEventListener('scroll', detailScrollHandler);
     }
@@ -377,7 +437,7 @@ function setupDetailScroll() {
 
     detailScrollHandler = () => {
         const scrollY = window.scrollY;
-        const threshold = 200; // When main header scrolls out of view
+        const threshold = 200;
 
         if (scrollY > threshold) {
             miniHeader.classList.add('visible');
@@ -388,8 +448,6 @@ function setupDetailScroll() {
 
     window.addEventListener('scroll', detailScrollHandler);
 }
-
-let selectedPortions = 1;
 
 function adjustPortionSelector(delta) {
     const countEl = document.getElementById('portion-count');
@@ -415,33 +473,17 @@ function toggleFavorite(recipeId) {
 
 // ===== SMART SHOPPING LIST =====
 
-// Parse amount string into value and unit
-function parseAmount(amountStr) {
-    const match = amountStr.match(/^([\d½¼¾]+(?:[\.,]\d+)?)\s*(.*)$/);
-    if (!match) return { value: 1, unit: amountStr, original: amountStr };
-
-    let value = match[1];
-    // Handle fractions
-    if (value === '½') value = 0.5;
-    else if (value === '¼') value = 0.25;
-    else if (value === '¾') value = 0.75;
-    else value = parseFloat(value.replace(',', '.'));
-
-    return { value, unit: match[2].trim(), original: amountStr };
-}
-
-// Format amount back to string with smart unit conversion
+// Format amount with smart unit conversion
 function formatAmount(value, unit) {
-    // Convert ml to liters for large amounts (round to 0.5L increments for shopping)
+    // Convert ml to liters for large amounts
     if (unit === 'ml' && value >= 750) {
         const liters = value / 1000;
-        // Round to nearest 0.5L for practical shopping
         const roundedLiters = Math.round(liters * 2) / 2;
         return `${roundedLiters} L`;
     }
 
     // Convert grams to kg for very large amounts
-    if (unit === 'gram' && value >= 1000) {
+    if (unit === 'g' && value >= 1000) {
         const kg = value / 1000;
         const roundedKg = Math.round(kg * 10) / 10;
         return `${roundedKg} kg`;
@@ -452,10 +494,11 @@ function formatAmount(value, unit) {
     if (displayValue === Math.floor(displayValue)) {
         displayValue = Math.floor(displayValue);
     }
-    return unit ? `${displayValue} ${unit}` : `${displayValue}`;
+
+    return `${displayValue} ${unit}`;
 }
 
-// Calculate combined ingredients from all shopping recipes
+// Calculate combined ingredients grouped by aisle
 function calculateCombinedIngredients() {
     const combined = {};
 
@@ -464,25 +507,25 @@ function calculateCombinedIngredients() {
         if (!recipe) return;
 
         recipe.ingredients.forEach(ing => {
-            const key = ing.item.toLowerCase();
-            const parsed = parseAmount(ing.amount);
+            const key = ing.ingredient.toLowerCase();
 
             if (!combined[key]) {
                 combined[key] = {
-                    name: ing.item,
+                    ingredient: ing.ingredient,
+                    display: ing.display || capitalizeFirst(ing.ingredient),
                     amounts: {},
                     sources: []
                 };
             }
 
             // Add to amounts by unit
-            const unitKey = parsed.unit || '_no_unit_';
+            const unitKey = ing.unit;
             if (!combined[key].amounts[unitKey]) {
                 combined[key].amounts[unitKey] = 0;
             }
-            combined[key].amounts[unitKey] += parsed.value * sr.portions;
+            combined[key].amounts[unitKey] += ing.amount * sr.portions;
 
-            // Track which recipe contributes
+            // Track sources
             const existingSource = combined[key].sources.find(s => s.recipeId === sr.recipeId);
             if (!existingSource) {
                 combined[key].sources.push({
@@ -495,6 +538,33 @@ function calculateCombinedIngredients() {
     });
 
     return combined;
+}
+
+// Group ingredients by aisle and sort
+function groupIngredientsByAisle(combined) {
+    const grouped = {};
+
+    Object.entries(combined).forEach(([key, ing]) => {
+        const dbEntry = ingredientDB[key] || { aisle: "Speciaal", order: 99 };
+        const aisle = dbEntry.aisle;
+
+        if (!grouped[aisle]) {
+            grouped[aisle] = [];
+        }
+
+        grouped[aisle].push({
+            key,
+            ...ing,
+            order: dbEntry.order
+        });
+    });
+
+    // Sort within each aisle
+    Object.values(grouped).forEach(items => {
+        items.sort((a, b) => a.order - b.order);
+    });
+
+    return grouped;
 }
 
 function addToShoppingList(recipeId, portions = 1) {
@@ -532,18 +602,16 @@ function removeRecipeFromShopping(recipeId) {
     if (index !== -1) {
         const recipe = recipes.find(r => r.id === recipeId);
         shoppingRecipes.splice(index, 1);
-        // Also remove checked ingredients that were only from this recipe
         saveToStorage();
         renderShoppingList();
         showToast(`${recipe.name} verwijderd`);
     }
 }
 
-function toggleIngredientCheck(ingredientName) {
-    const key = ingredientName.toLowerCase();
-    const index = checkedIngredients.indexOf(key);
+function toggleIngredientCheck(ingredientKey) {
+    const index = checkedIngredients.indexOf(ingredientKey);
     if (index === -1) {
-        checkedIngredients.push(key);
+        checkedIngredients.push(ingredientKey);
     } else {
         checkedIngredients.splice(index, 1);
     }
@@ -566,38 +634,37 @@ function renderShoppingList() {
     document.getElementById('shopping-actions').style.display = 'flex';
 
     const combined = calculateCombinedIngredients();
-    const ingredientKeys = Object.keys(combined);
+    const grouped = groupIngredientsByAisle(combined);
 
-    // Sort: unchecked first
-    ingredientKeys.sort((a, b) => {
-        const aChecked = checkedIngredients.includes(a);
-        const bChecked = checkedIngredients.includes(b);
-        if (aChecked && !bChecked) return 1;
-        if (!aChecked && bChecked) return -1;
-        return 0;
-    });
+    // Build ingredients HTML grouped by aisle
+    let ingredientsHTML = '';
 
-    // Build ingredients HTML
-    let ingredientsHTML = ingredientKeys.map(key => {
-        const ing = combined[key];
-        const isChecked = checkedIngredients.includes(key);
+    aisleOrder.forEach(aisle => {
+        if (!grouped[aisle] || grouped[aisle].length === 0) return;
 
-        // Format amounts (might have multiple units)
-        const amountParts = Object.entries(ing.amounts).map(([unit, value]) => {
-            if (unit === '_no_unit_') return formatAmount(value, '');
-            return formatAmount(value, unit);
+        const emoji = aisleEmojis[aisle] || '📦';
+
+        ingredientsHTML += `<div class="aisle-header">${emoji} ${aisle}</div>`;
+
+        grouped[aisle].forEach(ing => {
+            const isChecked = checkedIngredients.includes(ing.key);
+
+            // Format amounts
+            const amountParts = Object.entries(ing.amounts).map(([unit, value]) => {
+                return formatAmount(value, unit);
+            });
+            const amountStr = amountParts.join(' + ');
+
+            ingredientsHTML += `
+                <div class="shopping-item ${isChecked ? 'checked' : ''}" data-ingredient="${ing.key}">
+                    <div class="shopping-checkbox ${isChecked ? 'checked' : ''}"
+                         onclick="toggleIngredientCheck('${ing.key}')"></div>
+                    <span class="shopping-text">${ing.display}</span>
+                    <span class="shopping-amount">${amountStr}</span>
+                </div>
+            `;
         });
-        const amountStr = amountParts.join(' + ');
-
-        return `
-            <div class="shopping-item ${isChecked ? 'checked' : ''}" data-ingredient="${key}">
-                <div class="shopping-checkbox ${isChecked ? 'checked' : ''}"
-                     onclick="toggleIngredientCheck('${key}')"></div>
-                <span class="shopping-text">${ing.name}</span>
-                <span class="shopping-amount">${amountStr}</span>
-            </div>
-        `;
-    }).join('');
+    });
 
     // Build recipes section
     let recipesHTML = shoppingRecipes.map(sr => {
@@ -636,19 +703,28 @@ function renderShoppingList() {
 
 function copyShoppingList() {
     const combined = calculateCombinedIngredients();
-    const lines = Object.values(combined)
-        .filter(ing => !checkedIngredients.includes(ing.name.toLowerCase()))
-        .map(ing => {
+    const grouped = groupIngredientsByAisle(combined);
+
+    const lines = [];
+
+    aisleOrder.forEach(aisle => {
+        if (!grouped[aisle] || grouped[aisle].length === 0) return;
+
+        const emoji = aisleEmojis[aisle] || '📦';
+        lines.push(`\n${emoji} ${aisle}`);
+
+        grouped[aisle].forEach(ing => {
+            if (checkedIngredients.includes(ing.key)) return;
+
             const amountParts = Object.entries(ing.amounts).map(([unit, value]) => {
-                if (unit === '_no_unit_') return formatAmount(value, '');
                 return formatAmount(value, unit);
             });
-            return `• ${ing.name} - ${amountParts.join(' + ')}`;
+            lines.push(`• ${ing.display} - ${amountParts.join(' + ')}`);
         });
+    });
 
     // Add recipe summary
-    lines.push('');
-    lines.push('Shakes:');
+    lines.push('\n🥤 Shakes:');
     shoppingRecipes.forEach(sr => {
         const recipe = recipes.find(r => r.id === sr.recipeId);
         if (recipe) {
@@ -656,7 +732,7 @@ function copyShoppingList() {
         }
     });
 
-    const text = lines.join('\n');
+    const text = lines.join('\n').trim();
 
     if (navigator.clipboard) {
         navigator.clipboard.writeText(text).then(() => {
