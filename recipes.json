@@ -1,0 +1,146 @@
+{
+  "recipes": [
+    {
+      "id": 1,
+      "name": "Banaan Pindakaas Power",
+      "description": "Romige shake vol energie met banaan en pindakaas",
+      "calories": 650,
+      "protein": 28,
+      "prepTime": 5,
+      "image": "banana-peanut",
+      "ingredients": [
+        { "item": "Volle melk", "amount": "300 ml" },
+        { "item": "Rijpe banaan", "amount": "1 grote" },
+        { "item": "Pindakaas", "amount": "2 eetlepels" },
+        { "item": "Griekse yoghurt", "amount": "100 gram" },
+        { "item": "Honing", "amount": "1 eetlepel" },
+        { "item": "Havermout", "amount": "30 gram" }
+      ],
+      "instructions": "Doe alle ingrediënten in de blender. Mix 30-45 seconden tot een gladde shake. Giet in een groot glas en geniet direct."
+    },
+    {
+      "id": 2,
+      "name": "Chocolade Avocado Dream",
+      "description": "Fluweelzachte chocoladeshake met gezonde vetten",
+      "calories": 580,
+      "protein": 24,
+      "prepTime": 5,
+      "image": "chocolate-avocado",
+      "ingredients": [
+        { "item": "Volle melk", "amount": "250 ml" },
+        { "item": "Rijpe avocado", "amount": "½ stuks" },
+        { "item": "Cacaopoeder", "amount": "2 eetlepels" },
+        { "item": "Kwark", "amount": "100 gram" },
+        { "item": "Honing", "amount": "2 eetlepels" },
+        { "item": "Vanille-extract", "amount": "1 theelepel" }
+      ],
+      "instructions": "Snijd de avocado in stukjes. Voeg alle ingrediënten toe aan de blender. Mix tot een romige, gladde shake."
+    },
+    {
+      "id": 3,
+      "name": "Rode Vruchten Boost",
+      "description": "Frisse bessenshake boordevol antioxidanten",
+      "calories": 520,
+      "protein": 26,
+      "prepTime": 5,
+      "image": "berry-boost",
+      "ingredients": [
+        { "item": "Volle melk", "amount": "250 ml" },
+        { "item": "Diepvries rode vruchten", "amount": "150 gram" },
+        { "item": "Griekse yoghurt", "amount": "150 gram" },
+        { "item": "Honing", "amount": "2 eetlepels" },
+        { "item": "Amandelboter", "amount": "1 eetlepel" }
+      ],
+      "instructions": "Voeg eerst de melk en yoghurt in de blender. Voeg de bevroren vruchten en overige ingrediënten toe. Blend tot glad."
+    },
+    {
+      "id": 4,
+      "name": "Mango Kokos Tropic",
+      "description": "Tropische verwennerij met mango en kokos",
+      "calories": 590,
+      "protein": 22,
+      "prepTime": 5,
+      "image": "mango-coconut",
+      "ingredients": [
+        { "item": "Kokosmelk", "amount": "200 ml" },
+        { "item": "Volle melk", "amount": "100 ml" },
+        { "item": "Mango (vers of diepvries)", "amount": "150 gram" },
+        { "item": "Griekse yoghurt", "amount": "100 gram" },
+        { "item": "Honing", "amount": "1 eetlepel" },
+        { "item": "Geraspte kokos", "amount": "2 eetlepels" }
+      ],
+      "instructions": "Snijd verse mango in blokjes. Blend alle ingrediënten tot een gladde, tropische shake. Serveer met wat geraspte kokos."
+    },
+    {
+      "id": 5,
+      "name": "Appel Kaneel Comfort",
+      "description": "Warme smaken van appeltaart in een shake",
+      "calories": 540,
+      "protein": 20,
+      "prepTime": 7,
+      "image": "apple-cinnamon",
+      "ingredients": [
+        { "item": "Volle melk", "amount": "300 ml" },
+        { "item": "Appel (geschild)", "amount": "1 grote" },
+        { "item": "Kwark", "amount": "100 gram" },
+        { "item": "Havermout", "amount": "40 gram" },
+        { "item": "Kaneel", "amount": "1 theelepel" },
+        { "item": "Honing", "amount": "2 eetlepels" }
+      ],
+      "instructions": "Schil de appel en snijd in stukjes. Voeg alle ingrediënten toe aan de blender. Mix tot een gladde shake met het aroma van appeltaart."
+    },
+    {
+      "id": 6,
+      "name": "Vanille Walnoot Kracht",
+      "description": "Rijke vanilleshake met omega-3 rijke walnoten",
+      "calories": 620,
+      "protein": 25,
+      "prepTime": 5,
+      "image": "vanilla-walnut",
+      "ingredients": [
+        { "item": "Volle melk", "amount": "300 ml" },
+        { "item": "Walnoten", "amount": "30 gram" },
+        { "item": "Griekse yoghurt", "amount": "100 gram" },
+        { "item": "Vanille-extract", "amount": "1 theelepel" },
+        { "item": "Honing", "amount": "2 eetlepels" },
+        { "item": "Banaan", "amount": "½ stuks" }
+      ],
+      "instructions": "Blend eerst de walnoten met een beetje melk. Voeg de rest van de ingrediënten toe en mix tot een romige shake."
+    },
+    {
+      "id": 7,
+      "name": "Aardbei Havermout Start",
+      "description": "Ontbijt-shake vol vezels en energie",
+      "calories": 560,
+      "protein": 24,
+      "prepTime": 5,
+      "image": "strawberry-oat",
+      "ingredients": [
+        { "item": "Volle melk", "amount": "300 ml" },
+        { "item": "Aardbeien (vers of diepvries)", "amount": "150 gram" },
+        { "item": "Havermout", "amount": "50 gram" },
+        { "item": "Griekse yoghurt", "amount": "100 gram" },
+        { "item": "Honing", "amount": "1 eetlepel" }
+      ],
+      "instructions": "Laat de havermout 5 minuten weken in de melk voor een gladdere shake. Voeg de rest toe en blend grondig."
+    },
+    {
+      "id": 8,
+      "name": "Peren Amandel Genot",
+      "description": "Zachte perenshake met een vleugje amandel",
+      "calories": 550,
+      "protein": 23,
+      "prepTime": 6,
+      "image": "pear-almond",
+      "ingredients": [
+        { "item": "Volle melk", "amount": "250 ml" },
+        { "item": "Rijpe peer", "amount": "1 grote" },
+        { "item": "Amandelboter", "amount": "2 eetlepels" },
+        { "item": "Kwark", "amount": "100 gram" },
+        { "item": "Honing", "amount": "1 eetlepel" },
+        { "item": "Amandelmelk", "amount": "50 ml" }
+      ],
+      "instructions": "Schil de peer en verwijder het klokhuis. Snijd in stukjes en blend met alle andere ingrediënten tot een gladde shake."
+    }
+  ]
+}
