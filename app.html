@@ -2,7 +2,7 @@
 <html lang="nl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -48,8 +48,8 @@
             <!-- Shopping list loaded via JS -->
         </div>
         <div id="shopping-actions" class="shopping-actions" style="display: none;">
-            <button class="btn btn-copy" onclick="copyShoppingList()">📋 Kopieer</button>
-            <button class="btn btn-clear" onclick="clearShoppingList()">🗑️ Legen</button>
+            <button class="btn btn-copy" onclick="copyShoppingList()"><span class="btn-icon" id="copy-icon"></span> Kopieer</button>
+            <button class="btn btn-clear" onclick="clearShoppingList()"><span class="btn-icon" id="trash-icon"></span> Legen</button>
         </div>
     </section>
 
@@ -61,15 +61,15 @@
     <!-- Bottom Tab Bar -->
     <nav class="tab-bar">
         <button class="tab-btn active" data-tab="recipes">
-            <span class="tab-icon">📖</span>
+            <span class="tab-icon" id="tab-icon-recipes"></span>
             <span class="tab-label">Recepten</span>
         </button>
         <button class="tab-btn" data-tab="favorites">
-            <span class="tab-icon">❤️</span>
+            <span class="tab-icon" id="tab-icon-favorites"></span>
             <span class="tab-label">Favorieten</span>
         </button>
         <button class="tab-btn" data-tab="shopping">
-            <span class="tab-icon">🛒</span>
+            <span class="tab-icon" id="tab-icon-shopping"></span>
             <span class="tab-label">Boodschappen</span>
         </button>
     </nav>

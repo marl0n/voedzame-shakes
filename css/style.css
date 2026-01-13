@@ -50,6 +50,30 @@ button, a, input, select, textarea {
     touch-action: manipulation;
 }
 
+/* ===== SVG ICONS ===== */
+.icon {
+    width: 24px;
+    height: 24px;
+    display: inline-block;
+    vertical-align: middle;
+    flex-shrink: 0;
+}
+
+.btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    margin-right: 6px;
+    vertical-align: middle;
+}
+
+.btn-icon .icon {
+    width: 20px;
+    height: 20px;
+}
+
 /* ===== HEADER ===== */
 .header {
     background: var(--accent);
@@ -98,7 +122,16 @@ button, a, input, select, textarea {
 }
 
 .tab-btn .tab-icon {
-    font-size: 26px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tab-btn .tab-icon .icon {
+    width: 24px;
+    height: 24px;
 }
 
 .tab-btn .tab-label {
@@ -246,12 +279,17 @@ button, a, input, select, textarea {
     border-radius: 50%;
     background: #f0f0f0;
     border: none;
-    font-size: 20px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    color: var(--text-primary);
+}
+
+.back-btn-mini .icon {
+    width: 20px;
+    height: 20px;
 }
 
 .mini-header-emoji {
@@ -297,13 +335,18 @@ button, a, input, select, textarea {
     border-radius: 50%;
     background: rgba(255,255,255,0.9);
     border: none;
-    font-size: 24px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 10;
     box-shadow: var(--shadow);
+    color: var(--text-primary);
+}
+
+.back-btn .icon {
+    width: 24px;
+    height: 24px;
 }
 
 .detail-emoji {
@@ -371,9 +414,21 @@ button, a, input, select, textarea {
 .favorite-btn {
     background: none;
     border: none;
-    font-size: 28px;
     cursor: pointer;
     padding: 8px;
+    color: var(--text-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.favorite-btn .icon {
+    width: 28px;
+    height: 28px;
+}
+
+.favorite-btn.active {
+    color: #e53935;
 }
 
 .ingredients-list {
@@ -473,6 +528,9 @@ button, a, input, select, textarea {
     font-weight: 600;
     cursor: pointer;
     transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .add-shopping-btn:active {
@@ -496,6 +554,9 @@ button, a, input, select, textarea {
 
 /* Aisle headers for supermarket grouping */
 .aisle-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     font-size: 15px;
     font-weight: 700;
     color: var(--text-secondary);
@@ -508,6 +569,19 @@ button, a, input, select, textarea {
 
 .aisle-header:first-child {
     border-radius: var(--radius) var(--radius) 0 0;
+}
+
+.aisle-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+}
+
+.aisle-icon .icon {
+    width: 18px;
+    height: 18px;
 }
 
 .shopping-item {
