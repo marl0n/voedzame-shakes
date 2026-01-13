@@ -18,9 +18,6 @@ const shoppingListEl = document.getElementById('shopping-list');
 const noFavorites = document.getElementById('no-favorites');
 const noShopping = document.getElementById('no-shopping');
 const clearShoppingBtn = document.getElementById('clear-shopping');
-const modal = document.getElementById('recipe-modal');
-const recipeDetail = document.getElementById('recipe-detail');
-const modalClose = document.querySelector('.modal-close');
 const navBtns = document.querySelectorAll('.nav-btn');
 const toast = document.getElementById('toast');
 
@@ -91,19 +88,6 @@ function setupEventListeners() {
         btn.addEventListener('click', () => switchView(btn.dataset.view));
     });
 
-    // Modal close
-    modalClose.addEventListener('click', closeModal);
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) closeModal();
-    });
-
-    // Keyboard navigation
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.style.display !== 'none') {
-            closeModal();
-        }
-    });
-
     // Clear shopping list
     clearShoppingBtn.addEventListener('click', clearShoppingList);
 }
@@ -135,9 +119,9 @@ function switchView(viewName) {
     }
 }
 
-// Render recipes list
+// Render recipes list - fully expanded
 function renderRecipes() {
-    recipesList.innerHTML = recipes.map(recipe => createRecipeCard(recipe)).join('');
+    recipesList.innerHTML = recipes.map(recipe => createFullRecipeCard(recipe)).join('');
     addCardEventListeners(recipesList);
 }
 
@@ -150,69 +134,90 @@ function renderFavorites() {
         noFavorites.style.display = 'block';
     } else {
         noFavorites.style.display = 'none';
-        favoritesList.innerHTML = favoriteRecipes.map(recipe => createRecipeCard(recipe)).join('');
+        favoritesList.innerHTML = favoriteRecipes.map(recipe => createFullRecipeCard(recipe)).join('');
         addCardEventListeners(favoritesList);
     }
 }
 
-// Create recipe card HTML
-function createRecipeCard(recipe) {
+// Create fully expanded recipe card HTML
+function createFullRecipeCard(recipe) {
     const isFavorite = favorites.includes(recipe.id);
     const emoji = recipeEmojis[recipe.image] || '🥤';
 
     return `
-        <article class="recipe-card" data-id="${recipe.id}">
-            <div class="recipe-image ${recipe.image}">
-                ${emoji}
-            </div>
-            <div class="recipe-content">
-                <div class="recipe-header">
+        <article class="recipe-card" data-id="${recipe.id}" data-type="${recipe.image}">
+            <div class="recipe-header-section">
+                <span class="recipe-emoji">${emoji}</span>
+                <div class="recipe-title-block">
                     <h3 class="recipe-name">${recipe.name}</h3>
-                    <button class="favorite-btn ${isFavorite ? 'active' : ''}"
-                            data-id="${recipe.id}"
-                            aria-label="${isFavorite ? 'Verwijder uit favorieten' : 'Voeg toe aan favorieten'}">
-                        ${isFavorite ? '❤️' : '🤍'}
-                    </button>
+                    <p class="recipe-description">${recipe.description}</p>
                 </div>
-                <p class="recipe-description">${recipe.description}</p>
-                <div class="recipe-stats">
-                    <span class="stat">
-                        <span class="stat-icon">🔥</span>
-                        <span class="stat-value">${recipe.calories} kcal</span>
-                    </span>
-                    <span class="stat">
-                        <span class="stat-icon">💪</span>
-                        <span class="stat-value">${recipe.protein}g eiwit</span>
-                    </span>
-                    <span class="stat">
-                        <span class="stat-icon">⏱️</span>
-                        <span class="stat-value">${recipe.prepTime} min</span>
-                    </span>
-                </div>
+                <button class="favorite-btn ${isFavorite ? 'active' : ''}"
+                        data-id="${recipe.id}"
+                        aria-label="${isFavorite ? 'Verwijder uit favorieten' : 'Voeg toe aan favorieten'}">
+                    ${isFavorite ? '❤️' : '🤍'}
+                </button>
             </div>
+
+            <div class="recipe-stats">
+                <span class="stat">
+                    <span class="stat-icon">🔥</span>
+                    <span class="stat-value">${recipe.calories} kcal</span>
+                </span>
+                <span class="stat">
+                    <span class="stat-icon">💪</span>
+                    <span class="stat-value">${recipe.protein}g eiwit</span>
+                </span>
+                <span class="stat">
+                    <span class="stat-icon">⏱️</span>
+                    <span class="stat-value">${recipe.prepTime} min</span>
+                </span>
+            </div>
+
+            <div class="recipe-ingredients">
+                <h4 class="recipe-section-title">🛒 Ingrediënten</h4>
+                <ul class="ingredients-list">
+                    ${recipe.ingredients.map(ing => `
+                        <li class="ingredient-item">
+                            <span class="ingredient-name">${ing.item}</span>
+                            <span class="ingredient-amount">${ing.amount}</span>
+                        </li>
+                    `).join('')}
+                </ul>
+            </div>
+
+            <div class="recipe-instructions">
+                <h4 class="recipe-section-title">👨‍🍳 Bereiding</h4>
+                <p class="instructions-text">${recipe.instructions}</p>
+            </div>
+
+            <button class="btn btn-primary add-shopping-btn" data-id="${recipe.id}">
+                🛒 Voeg ingrediënten toe aan boodschappenlijst
+            </button>
         </article>
     `;
 }
 
 // Add event listeners to recipe cards
 function addCardEventListeners(container) {
-    // Card click (open detail)
-    container.querySelectorAll('.recipe-card').forEach(card => {
-        card.addEventListener('click', (e) => {
-            // Don't open modal if clicking favorite button
-            if (!e.target.closest('.favorite-btn')) {
-                const recipeId = parseInt(card.dataset.id);
-                openRecipeDetail(recipeId);
-            }
-        });
-    });
-
     // Favorite button click
     container.querySelectorAll('.favorite-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
             const recipeId = parseInt(btn.dataset.id);
             toggleFavorite(recipeId);
+        });
+    });
+
+    // Add to shopping list button
+    container.querySelectorAll('.add-shopping-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const recipeId = parseInt(btn.dataset.id);
+            const recipe = recipes.find(r => r.id === recipeId);
+            if (recipe) {
+                addToShoppingList(recipe);
+            }
         });
     });
 }
@@ -239,78 +244,10 @@ function toggleFavorite(recipeId) {
     }
 }
 
-// Open recipe detail modal
-function openRecipeDetail(recipeId) {
-    const recipe = recipes.find(r => r.id === recipeId);
-    if (!recipe) return;
-
-    const emoji = recipeEmojis[recipe.image] || '🥤';
-    const isFavorite = favorites.includes(recipe.id);
-
-    recipeDetail.innerHTML = `
-        <div class="detail-header">
-            <h2 class="detail-title">${emoji} ${recipe.name}</h2>
-            <p class="detail-description">${recipe.description}</p>
-        </div>
-
-        <div class="detail-stats">
-            <div class="detail-stat">
-                <div class="detail-stat-value">${recipe.calories}</div>
-                <div class="detail-stat-label">Calorieën</div>
-            </div>
-            <div class="detail-stat">
-                <div class="detail-stat-value">${recipe.protein}g</div>
-                <div class="detail-stat-label">Eiwit</div>
-            </div>
-            <div class="detail-stat">
-                <div class="detail-stat-value">${recipe.prepTime}</div>
-                <div class="detail-stat-label">Minuten</div>
-            </div>
-        </div>
-
-        <section class="detail-section">
-            <h3 class="detail-section-title">
-                <span>🛒</span> Ingrediënten
-            </h3>
-            <ul class="ingredients-list">
-                ${recipe.ingredients.map(ing => `
-                    <li class="ingredient-item">
-                        <span class="ingredient-name">${ing.item}</span>
-                        <span class="ingredient-amount">${ing.amount}</span>
-                    </li>
-                `).join('')}
-            </ul>
-        </section>
-
-        <section class="detail-section">
-            <h3 class="detail-section-title">
-                <span>👨‍🍳</span> Bereiding
-            </h3>
-            <p class="instructions-text">${recipe.instructions}</p>
-        </section>
-
-        <button class="btn btn-primary add-shopping-btn" data-id="${recipe.id}">
-            🛒 Voeg toe aan boodschappenlijst
-        </button>
-    `;
-
-    // Add shopping button listener
-    recipeDetail.querySelector('.add-shopping-btn').addEventListener('click', () => {
-        addToShoppingList(recipe);
-    });
-
-    modal.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-}
-
-// Close modal
-function closeModal() {
-    modal.style.display = 'none';
-    document.body.style.overflow = '';
-}
-
 // Add recipe ingredients to shopping list
 function addToShoppingList(recipe) {
+    let addedCount = 0;
+
     recipe.ingredients.forEach(ingredient => {
         // Check if item already exists
         const existingIndex = shoppingList.findIndex(
@@ -325,12 +262,17 @@ function addToShoppingList(recipe) {
                 checked: false,
                 recipeId: recipe.id
             });
+            addedCount++;
         }
     });
 
     saveToStorage();
-    showToast(`Ingrediënten van ${recipe.name} toegevoegd`);
-    closeModal();
+
+    if (addedCount > 0) {
+        showToast(`${addedCount} ingrediënten toegevoegd aan boodschappenlijst`);
+    } else {
+        showToast('Alle ingrediënten staan al op je lijst');
+    }
 }
 
 // Render shopping list
