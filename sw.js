@@ -3,10 +3,11 @@
  * Biedt offline ondersteuning en caching
  */
 
-const CACHE_NAME = 'voedzame-shakes-v2';
+const CACHE_NAME = 'voedzame-shakes-v3';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
+    './app-v2.html',
     './css/style.css',
     './js/app.js',
     './recipes.json',
