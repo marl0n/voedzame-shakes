@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="description" content="Voedzame Shakes - Heerlijke, voedzame shake recepten">
+    <meta name="theme-color" content="#F4C430">
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Voedzame Shakes">
+
+    <title>Voedzame Shakes</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <h1>🥤 Voedzame Shakes</h1>
+    </header>
+
+    <!-- Recipes View -->
+    <section id="recipes-view" class="view active">
+        <div id="recipes-list" class="recipe-list">
+            <!-- Recipes loaded via JS -->
+        </div>
+    </section>
+
+    <!-- Favorites View -->
+    <section id="favorites-view" class="view">
+        <h2 class="view-title">Favorieten</h2>
+        <div id="favorites-list" class="recipe-list">
+            <!-- Favorites loaded via JS -->
+        </div>
+    </section>
+
+    <!-- Shopping View -->
+    <section id="shopping-view" class="view">
+        <h2 class="view-title">Boodschappenlijst</h2>
+        <div id="shopping-list">
+            <!-- Shopping list loaded via JS -->
+        </div>
+        <div id="shopping-actions" class="shopping-actions" style="display: none;">
+            <button class="btn btn-copy" onclick="copyShoppingList()"><span class="btn-icon" id="copy-icon"></span> Kopieer</button>
+            <button class="btn btn-clear" onclick="clearShoppingList()"><span class="btn-icon" id="trash-icon"></span> Legen</button>
+        </div>
+    </section>
+
+    <!-- Detail View -->
+    <section id="detail-view" class="view">
+        <!-- Detail loaded via JS -->
+    </section>
+
+    <!-- Bottom Tab Bar -->
+    <nav class="tab-bar">
+        <button class="tab-btn active" data-tab="recipes">
+            <span class="tab-icon" id="tab-icon-recipes"></span>
+            <span class="tab-label">Recepten</span>
+        </button>
+        <button class="tab-btn" data-tab="favorites">
+            <span class="tab-icon" id="tab-icon-favorites"></span>
+            <span class="tab-label">Favorieten</span>
+        </button>
+        <button class="tab-btn" data-tab="shopping">
+            <span class="tab-icon" id="tab-icon-shopping"></span>
+            <span class="tab-label">Boodschappen</span>
+        </button>
+    </nav>
+
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
