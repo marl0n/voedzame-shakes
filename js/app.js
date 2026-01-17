@@ -5,6 +5,8 @@
 
 // ===== SF SYMBOL STYLE ICONS (SVG) =====
 const icons = {
+    // Header icons
+    refresh: `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>`,
     // Tab bar icons
     book: `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>`,
     heart: `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`,
@@ -264,6 +266,10 @@ function updateBadges() {
 }
 
 function initIcons() {
+    // Update button icon
+    const updateBtn = document.getElementById('update-btn');
+    if (updateBtn) updateBtn.innerHTML = icons.refresh;
+    
     // Tab bar icons
     document.getElementById('tab-icon-recipes').innerHTML = icons.book;
     document.getElementById('tab-icon-favorites').innerHTML = icons.heart;
