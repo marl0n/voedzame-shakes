@@ -1,0 +1,25 @@
+# Voedzame Shakes - Cursor AI Context
+
+## Figma Design
+Design source: https://www.figma.com/make/pdxQrgt2kBCruayxbJp6oI/Nutritious-Shakes-App-Design
+
+Use this Figma design as the visual reference for all styling work.
+
+## Tech Stack
+- Vanilla HTML/CSS/JS (NO frameworks, NO React)
+- Static JSON for recipes
+- localStorage for persistence  
+- Service Worker for offline PWA
+
+## Key Files
+- `index.html` - Single page with 3 views
+- `js/app.js` - All logic
+- `css/style.css` - All styling
+- `recipes.json` - Recipe data
+- `sw.js` - Service Worker
+
+## Design Rules
+- Mobile-first, accessibility-focused
+- Large fonts (18px+ base) for older users
+- Protein displayed before calories
+- No prep time on cards

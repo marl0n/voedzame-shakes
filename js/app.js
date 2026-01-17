@@ -235,6 +235,32 @@ function init() {
     renderFavorites();
     setupEventListeners();
     registerServiceWorker();
+    updateBadges();
+}
+
+// ===== BADGE UPDATES =====
+function updateBadges() {
+    // Favorites badge
+    const favBadge = document.getElementById('favorites-badge');
+    if (favBadge) {
+        if (favorites.length > 0) {
+            favBadge.textContent = favorites.length;
+            favBadge.style.display = 'flex';
+        } else {
+            favBadge.style.display = 'none';
+        }
+    }
+    
+    // Shopping badge
+    const shopBadge = document.getElementById('shopping-badge');
+    if (shopBadge) {
+        if (shoppingRecipes.length > 0) {
+            shopBadge.textContent = shoppingRecipes.length;
+            shopBadge.style.display = 'flex';
+        } else {
+            shopBadge.style.display = 'none';
+        }
+    }
 }
 
 function initIcons() {
@@ -338,28 +364,44 @@ function renderRecipes() {
 function renderFavorites() {
     const favoriteRecipes = recipes.filter(r => favorites.includes(r.id));
     if (favoriteRecipes.length === 0) {
-        favoritesList.innerHTML = `<div class="empty-message">Nog geen favorieten.<br>Tik op het hartje bij een recept.</div>`;
+        favoritesList.innerHTML = `
+            <div class="empty-message">
+                <div class="empty-icon">❤️</div>
+                <h3>Nog geen favorieten</h3>
+                <p>Tik op het hartje bij een recept om het hier op te slaan.</p>
+            </div>
+        `;
     } else {
         favoritesList.innerHTML = favoriteRecipes.map(recipe => createRecipeCard(recipe)).join('');
         addCardListeners(favoritesList);
     }
+    updateBadges();
 }
 
 function createRecipeCard(recipe) {
+    const isFavorite = favorites.includes(recipe.id);
     return `
         <div class="recipe-card" data-id="${recipe.id}">
             <div class="recipe-card-image ${recipe.gradient}">
                 <span class="recipe-card-emoji">${recipe.emoji}</span>
-                <h3 class="recipe-card-title">${recipe.name}</h3>
+                <button class="favorite-btn-card ${isFavorite ? 'active' : ''}" 
+                        data-id="${recipe.id}" 
+                        onclick="event.stopPropagation(); toggleFavorite(${recipe.id})"
+                        aria-label="${isFavorite ? 'Verwijder uit favorieten' : 'Voeg toe aan favorieten'}">
+                    ${isFavorite ? icons.heartFill : icons.heart}
+                </button>
             </div>
-            <div class="recipe-card-stats">
-                <div class="recipe-stat">
-                    <span class="recipe-stat-value">${recipe.kcal}</span>
-                    <span class="recipe-stat-label">kcal</span>
-                </div>
-                <div class="recipe-stat">
-                    <span class="recipe-stat-value">${recipe.protein}g</span>
-                    <span class="recipe-stat-label">eiwit</span>
+            <div class="recipe-card-content">
+                <h3 class="recipe-card-title">${recipe.name}</h3>
+                <div class="recipe-card-stats">
+                    <div class="recipe-stat protein">
+                        <span class="recipe-stat-value">${recipe.protein}g</span>
+                        <span class="recipe-stat-label">eiwit</span>
+                    </div>
+                    <div class="recipe-stat calories">
+                        <span class="recipe-stat-value">${recipe.kcal}</span>
+                        <span class="recipe-stat-label">kcal</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -399,35 +441,42 @@ function renderRecipeDetail(recipe) {
         <div class="detail-header ${recipe.gradient}">
             <button class="back-btn" onclick="closeDetail()">${icons.chevronLeft}</button>
             <span class="detail-emoji">${recipe.emoji}</span>
-            <h1 class="detail-title">${recipe.name}</h1>
-            <div class="detail-stats">
-                <div class="detail-stat">
-                    <div class="detail-stat-value">${recipe.kcal}</div>
-                    <div class="detail-stat-label">calorieën</div>
-                </div>
-                <div class="detail-stat">
-                    <div class="detail-stat-value">${recipe.protein}g</div>
-                    <div class="detail-stat-label">eiwit</div>
-                </div>
-            </div>
         </div>
 
         <div class="detail-content">
-            <div class="detail-section-header">
-                <h2 class="detail-section-title">Ingrediënten</h2>
-                <button class="favorite-btn ${isFavorite ? 'active' : ''}" data-id="${recipe.id}">
-                    ${isFavorite ? icons.heartFill : icons.heart}
-                </button>
+            <h1 class="detail-title">${recipe.name}</h1>
+            
+            <div class="detail-stats">
+                <div class="detail-stat protein">
+                    <div class="detail-stat-icon">${icons.leaf}</div>
+                    <div class="detail-stat-value">${recipe.protein}g</div>
+                    <div class="detail-stat-label">eiwit</div>
+                </div>
+                <div class="detail-stat calories">
+                    <div class="detail-stat-icon">${icons.sunrise}</div>
+                    <div class="detail-stat-value">${recipe.kcal}</div>
+                    <div class="detail-stat-label">kcal</div>
+                </div>
             </div>
 
-            <ul class="ingredients-list">
-                ${recipe.ingredients.map(ing => `
-                    <li class="ingredient-item">
-                        <span class="ingredient-name">${ing.display || capitalizeFirst(ing.ingredient)}</span>
-                        <span class="ingredient-amount">${formatAmount(ing.amount, ing.unit)}</span>
-                    </li>
-                `).join('')}
-            </ul>
+            <div class="detail-section">
+                <div class="detail-section-header">
+                    <h2 class="detail-section-title">Ingrediënten</h2>
+                    <button class="favorite-btn ${isFavorite ? 'active' : ''}" data-id="${recipe.id}">
+                        ${isFavorite ? icons.heartFill : icons.heart}
+                    </button>
+                </div>
+
+                <ul class="ingredients-list">
+                    ${recipe.ingredients.map(ing => `
+                        <li class="ingredient-item">
+                            <span class="ingredient-bullet"></span>
+                            <span class="ingredient-name">${ing.display || capitalizeFirst(ing.ingredient)}</span>
+                            <span class="ingredient-amount">${formatAmount(ing.amount, ing.unit)}</span>
+                        </li>
+                    `).join('')}
+                </ul>
+            </div>
 
             <div class="portion-selector">
                 <label>Aantal porties:</label>
@@ -439,7 +488,7 @@ function renderRecipeDetail(recipe) {
             </div>
 
             <button class="add-shopping-btn" data-id="${recipe.id}">
-                <span class="btn-icon">${icons.cart}</span> Voeg toe aan boodschappen
+                ${icons.cart} Voeg toe aan boodschappenlijst
             </button>
             ${inShopping ? `<p class="already-in-list">Al op lijst: ${inShopping.portions}x</p>` : ''}
         </div>
@@ -499,12 +548,14 @@ function toggleFavorite(recipeId) {
     const recipe = recipes.find(r => r.id === recipeId);
     if (index === -1) {
         favorites.push(recipeId);
-        showToast(`${recipe.name} toegevoegd aan favorieten`);
+        showToast(`Toegevoegd aan favorieten`);
     } else {
         favorites.splice(index, 1);
-        showToast(`${recipe.name} verwijderd uit favorieten`);
+        showToast(`Verwijderd uit favorieten`);
     }
     saveToStorage();
+    renderRecipes();
+    updateBadges();
 }
 
 // ===== SMART SHOPPING LIST =====
@@ -656,11 +707,14 @@ function toggleIngredientCheck(ingredientKey) {
 }
 
 function renderShoppingList() {
+    updateBadges();
+    
     if (shoppingRecipes.length === 0) {
         shoppingListEl.innerHTML = `
             <div class="empty-message">
-                Je boodschappenlijst is leeg.<br>
-                Voeg shakes toe vanuit een recept.
+                <div class="empty-icon">🛒</div>
+                <h3>Geen boodschappen</h3>
+                <p>Voeg ingrediënten toe vanuit een recept om hier je boodschappenlijst te zien.</p>
             </div>
         `;
         document.getElementById('shopping-actions').style.display = 'none';
@@ -813,6 +867,44 @@ async function registerServiceWorker() {
             await navigator.serviceWorker.register('sw.js');
         } catch (e) {
             console.log('SW registration failed:', e);
+        }
+    }
+}
+
+// ===== UPDATE MECHANISM =====
+async function checkForUpdates() {
+    const btn = document.getElementById('update-btn');
+    if (btn) {
+        btn.classList.add('spinning');
+    }
+    
+    try {
+        // 1. Update service worker
+        if ('serviceWorker' in navigator) {
+            const reg = await navigator.serviceWorker.ready;
+            await reg.update();
+            console.log('Service Worker update gecontroleerd');
+        }
+        
+        // 2. Clear all caches
+        if ('caches' in window) {
+            const cacheNames = await caches.keys();
+            await Promise.all(cacheNames.map(name => caches.delete(name)));
+            console.log('Caches geleegd:', cacheNames);
+        }
+        
+        showToast('App wordt bijgewerkt...');
+        
+        // 3. Hard reload after short delay
+        setTimeout(() => {
+            window.location.reload(true);
+        }, 1000);
+        
+    } catch (error) {
+        console.error('Update mislukt:', error);
+        showToast('Update mislukt, probeer opnieuw');
+        if (btn) {
+            btn.classList.remove('spinning');
         }
     }
 }
