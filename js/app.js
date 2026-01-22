@@ -1,6 +1,7 @@
 /**
- * Voedzame Shakes App
+ * Voedzame Recepten App
  * Modern, simple recipe app with smart shopping list
+ * Supports shakes and soups with different detail views
  */
 
 // ===== SF SYMBOL STYLE ICONS (SVG) =====
@@ -35,12 +36,51 @@ const aisleIcons = {
     "Zoet": icons.dropFill,
     "Bakken": icons.stack,
     "Diepvries": icons.snowflake,
-    "Speciaal": icons.star
+    "Speciaal": icons.star,
+    "Groenten": icons.leaf
+};
+
+// ===== EMOJI MAPPING =====
+const recipeEmojis = {
+    "banana-peanut": "🍌",
+    "chocolate-avocado": "🍫",
+    "berry-boost": "🍇",
+    "mango-coconut": "🥭",
+    "apple-cinnamon": "🍎",
+    "vanilla-walnut": "🌰",
+    "strawberry-oat": "🍓",
+    "pear-almond": "🍐",
+    "green-keto": "🥬",
+    "creamy-cacao": "🍫",
+    // Soup emojis
+    "tomato-soup": "🍅",
+    "broccoli-soup": "🥦",
+    "courgette-soup": "🥒",
+    "carrot-soup": "🥕"
+};
+
+// ===== GRADIENT MAPPING =====
+const recipeGradients = {
+    "banana-peanut": "gradient-banana",
+    "chocolate-avocado": "gradient-chocolate",
+    "berry-boost": "gradient-berry",
+    "mango-coconut": "gradient-mango",
+    "apple-cinnamon": "gradient-apple",
+    "vanilla-walnut": "gradient-vanilla",
+    "strawberry-oat": "gradient-strawberry",
+    "pear-almond": "gradient-pear",
+    "green-keto": "gradient-green-keto",
+    "creamy-cacao": "gradient-creamy-cacao",
+    // Soup gradients
+    "tomato-soup": "gradient-tomato-soup",
+    "broccoli-soup": "gradient-broccoli-soup",
+    "courgette-soup": "gradient-courgette-soup",
+    "carrot-soup": "gradient-carrot-soup"
 };
 
 // ===== INGREDIENT DATABASE =====
 // Gangpad volgorde zoals in supermarkt
-const aisleOrder = ["Fruit", "Zuivel", "Ontbijt", "Noten", "Zoet", "Bakken", "Diepvries", "Speciaal"];
+const aisleOrder = ["Groenten", "Fruit", "Zuivel", "Ontbijt", "Noten", "Zoet", "Bakken", "Diepvries", "Speciaal"];
 
 const ingredientDB = {
     // Fruit
@@ -51,12 +91,29 @@ const ingredientDB = {
     "appel": { aisle: "Fruit", order: 5 },
     "peer": { aisle: "Fruit", order: 6 },
 
+    // Groenten (for soups)
+    "spinazie": { aisle: "Groenten", order: 1 },
+    "komkommer": { aisle: "Groenten", order: 2 },
+    "citroensap": { aisle: "Fruit", order: 9 },
+    "gepelde tomaten (blik)": { aisle: "Speciaal", order: 10 },
+    "ui": { aisle: "Groenten", order: 3 },
+    "knoflook": { aisle: "Groenten", order: 4 },
+    "broccoli roosjes": { aisle: "Groenten", order: 5 },
+    "courgettes": { aisle: "Groenten", order: 6 },
+    "prei (het witte deel)": { aisle: "Groenten", order: 7 },
+    "wortels": { aisle: "Groenten", order: 8 },
+    "verse gember": { aisle: "Groenten", order: 9 },
+
     // Zuivel
     "volle melk": { aisle: "Zuivel", order: 1 },
     "griekse yoghurt": { aisle: "Zuivel", order: 2 },
     "kwark": { aisle: "Zuivel", order: 3 },
     "kokosmelk": { aisle: "Zuivel", order: 4 },
     "amandelmelk": { aisle: "Zuivel", order: 5 },
+    "slagroom": { aisle: "Zuivel", order: 6 },
+    "crème fraîche": { aisle: "Zuivel", order: 7 },
+    "boter": { aisle: "Zuivel", order: 8 },
+    "oude kaas, geraspt": { aisle: "Zuivel", order: 9 },
 
     // Ontbijt
     "havermout": { aisle: "Ontbijt", order: 1 },
@@ -69,188 +126,28 @@ const ingredientDB = {
 
     // Zoet
     "honing": { aisle: "Zoet", order: 1 },
+    "suiker": { aisle: "Zoet", order: 2 },
 
     // Bakken
     "cacaopoeder": { aisle: "Bakken", order: 1 },
     "vanille-extract": { aisle: "Bakken", order: 2 },
     "kaneel": { aisle: "Bakken", order: 3 },
+    "nootmuskaat": { aisle: "Bakken", order: 4 },
+    "olijfolie": { aisle: "Bakken", order: 5 },
 
     // Diepvries
     "rode vruchten": { aisle: "Diepvries", order: 1 },
 
-    // Groenten (keto shakes)
-    "spinazie": { aisle: "Fruit", order: 7 },
-    "komkommer": { aisle: "Fruit", order: 8 },
-    "citroensap": { aisle: "Fruit", order: 9 },
-
-    // Zuivel (keto)
-    "slagroom": { aisle: "Zuivel", order: 6 },
+    // Speciaal
     "water": { aisle: "Speciaal", order: 1 },
     "zout": { aisle: "Speciaal", order: 2 },
-    "stevia of zout": { aisle: "Speciaal", order: 3 }
+    "stevia of zout": { aisle: "Speciaal", order: 3 },
+    "groentebouillon": { aisle: "Speciaal", order: 4 },
+    "zout en peper": { aisle: "Speciaal", order: 5 }
 };
 
-// ===== RECIPES DATA =====
-const recipes = [
-    {
-        id: 1,
-        name: "Banaan Pindakaas Power",
-        emoji: "🍌",
-        gradient: "gradient-banana",
-        kcal: 650,
-        protein: 28,
-        ingredients: [
-            { ingredient: "volle melk", amount: 300, unit: "ml" },
-            { ingredient: "banaan", display: "Rijpe banaan", amount: 1, unit: "stuk" },
-            { ingredient: "pindakaas", amount: 2, unit: "el" },
-            { ingredient: "griekse yoghurt", amount: 100, unit: "g" },
-            { ingredient: "honing", amount: 1, unit: "el" },
-            { ingredient: "havermout", amount: 30, unit: "g" }
-        ]
-    },
-    {
-        id: 2,
-        name: "Chocolade Avocado Dream",
-        emoji: "🍫",
-        gradient: "gradient-chocolate",
-        kcal: 580,
-        protein: 24,
-        ingredients: [
-            { ingredient: "volle melk", amount: 250, unit: "ml" },
-            { ingredient: "avocado", display: "Rijpe avocado", amount: 0.5, unit: "stuk" },
-            { ingredient: "cacaopoeder", amount: 2, unit: "el" },
-            { ingredient: "kwark", amount: 100, unit: "g" },
-            { ingredient: "honing", amount: 2, unit: "el" },
-            { ingredient: "vanille-extract", amount: 1, unit: "tl" }
-        ]
-    },
-    {
-        id: 3,
-        name: "Rode Vruchten Boost",
-        emoji: "🍇",
-        gradient: "gradient-berry",
-        kcal: 520,
-        protein: 26,
-        ingredients: [
-            { ingredient: "volle melk", amount: 250, unit: "ml" },
-            { ingredient: "rode vruchten", display: "Diepvries rode vruchten", amount: 150, unit: "g" },
-            { ingredient: "griekse yoghurt", amount: 150, unit: "g" },
-            { ingredient: "honing", amount: 2, unit: "el" },
-            { ingredient: "amandelboter", amount: 1, unit: "el" }
-        ]
-    },
-    {
-        id: 4,
-        name: "Mango Kokos Tropic",
-        emoji: "🥭",
-        gradient: "gradient-mango",
-        kcal: 590,
-        protein: 22,
-        ingredients: [
-            { ingredient: "kokosmelk", amount: 200, unit: "ml" },
-            { ingredient: "volle melk", amount: 100, unit: "ml" },
-            { ingredient: "mango", display: "Mango (vers of diepvries)", amount: 150, unit: "g" },
-            { ingredient: "griekse yoghurt", amount: 100, unit: "g" },
-            { ingredient: "honing", amount: 1, unit: "el" },
-            { ingredient: "geraspte kokos", amount: 2, unit: "el" }
-        ]
-    },
-    {
-        id: 5,
-        name: "Appel Kaneel Comfort",
-        emoji: "🍎",
-        gradient: "gradient-apple",
-        kcal: 540,
-        protein: 20,
-        ingredients: [
-            { ingredient: "volle melk", amount: 300, unit: "ml" },
-            { ingredient: "appel", display: "Appel (geschild)", amount: 1, unit: "stuk" },
-            { ingredient: "kwark", amount: 100, unit: "g" },
-            { ingredient: "havermout", amount: 40, unit: "g" },
-            { ingredient: "kaneel", amount: 1, unit: "tl" },
-            { ingredient: "honing", amount: 2, unit: "el" }
-        ]
-    },
-    {
-        id: 6,
-        name: "Vanille Walnoot Kracht",
-        emoji: "🌰",
-        gradient: "gradient-vanilla",
-        kcal: 620,
-        protein: 25,
-        ingredients: [
-            { ingredient: "volle melk", amount: 300, unit: "ml" },
-            { ingredient: "walnoten", amount: 30, unit: "g" },
-            { ingredient: "griekse yoghurt", amount: 100, unit: "g" },
-            { ingredient: "vanille-extract", amount: 1, unit: "tl" },
-            { ingredient: "honing", amount: 2, unit: "el" },
-            { ingredient: "banaan", amount: 0.5, unit: "stuk" }
-        ]
-    },
-    {
-        id: 7,
-        name: "Aardbei Havermout Start",
-        emoji: "🍓",
-        gradient: "gradient-strawberry",
-        kcal: 560,
-        protein: 24,
-        ingredients: [
-            { ingredient: "volle melk", amount: 300, unit: "ml" },
-            { ingredient: "aardbeien", amount: 150, unit: "g" },
-            { ingredient: "havermout", amount: 50, unit: "g" },
-            { ingredient: "griekse yoghurt", amount: 100, unit: "g" },
-            { ingredient: "honing", amount: 1, unit: "el" }
-        ]
-    },
-    {
-        id: 8,
-        name: "Peren Amandel Genot",
-        emoji: "🍐",
-        gradient: "gradient-pear",
-        kcal: 550,
-        protein: 23,
-        ingredients: [
-            { ingredient: "volle melk", amount: 250, unit: "ml" },
-            { ingredient: "peer", display: "Rijpe peer", amount: 1, unit: "stuk" },
-            { ingredient: "amandelboter", amount: 2, unit: "el" },
-            { ingredient: "kwark", amount: 100, unit: "g" },
-            { ingredient: "honing", amount: 1, unit: "el" },
-            { ingredient: "amandelmelk", amount: 50, unit: "ml" }
-        ]
-    },
-    {
-        id: 9,
-        name: "Groene Keto Shake",
-        emoji: "🥬",
-        gradient: "gradient-green-keto",
-        kcal: 515,
-        protein: 5,
-        ingredients: [
-            { ingredient: "spinazie", amount: 1, unit: "handvol" },
-            { ingredient: "avocado", amount: 0.5, unit: "stuk" },
-            { ingredient: "komkommer", amount: 0.25, unit: "stuk" },
-            { ingredient: "citroensap", amount: 1, unit: "scheutje" },
-            { ingredient: "slagroom", amount: 100, unit: "ml" },
-            { ingredient: "water", amount: 100, unit: "ml" },
-            { ingredient: "zout", amount: 1, unit: "snufje" }
-        ]
-    },
-    {
-        id: 10,
-        name: "Creamy Cacao Shake",
-        emoji: "🍫",
-        gradient: "gradient-creamy-cacao",
-        kcal: 510,
-        protein: 5,
-        ingredients: [
-            { ingredient: "avocado", amount: 0.5, unit: "stuk" },
-            { ingredient: "cacaopoeder", amount: 1, unit: "el" },
-            { ingredient: "slagroom", amount: 100, unit: "ml" },
-            { ingredient: "water", amount: 100, unit: "ml" },
-            { ingredient: "stevia of zout", display: "Stevia of zout", amount: 1, unit: "optioneel" }
-        ]
-    }
-];
+// ===== RECIPES DATA (loaded from JSON) =====
+let recipes = [];
 
 // ===== STATE =====
 let favorites = [];
@@ -258,6 +155,7 @@ let shoppingRecipes = [];
 let checkedIngredients = [];
 let currentView = 'recipes';
 let currentRecipe = null;
+let currentFilter = 'all';
 
 // ===== DOM ELEMENTS =====
 const recipesView = document.getElementById('recipes-view');
@@ -273,14 +171,42 @@ const header = document.querySelector('.header');
 const tabBar = document.querySelector('.tab-bar');
 
 // ===== INIT =====
-function init() {
+async function init() {
     initIcons();
+    await loadRecipes();
     loadFromStorage();
     renderRecipes();
     renderFavorites();
     setupEventListeners();
+    setupFilterPills();
     registerServiceWorker();
     updateBadges();
+}
+
+// ===== LOAD RECIPES FROM JSON =====
+async function loadRecipes() {
+    try {
+        const response = await fetch('recipes.json');
+        const data = await response.json();
+        recipes = data.recipes.map(r => ({
+            id: r.id,
+            name: r.name,
+            description: r.description,
+            emoji: recipeEmojis[r.image] || "🍽️",
+            gradient: recipeGradients[r.image] || "gradient-banana",
+            kcal: r.calories,
+            protein: r.protein,
+            category: r.category || "shake",
+            ingredients: r.ingredients.map(ing => ({
+                ingredient: ing.item.toLowerCase(),
+                display: ing.item,
+                amount: ing.amount
+            })),
+            steps: r.steps || null
+        }));
+    } catch (e) {
+        console.error('Error loading recipes:', e);
+    }
 }
 
 // ===== BADGE UPDATES =====
@@ -349,10 +275,70 @@ function saveToStorage() {
     }
 }
 
+// ===== STEP CHECKBOX STATE =====
+function getCheckedSteps(recipeId) {
+    try {
+        const stored = localStorage.getItem(`voedzame-steps-${recipeId}`);
+        return stored ? JSON.parse(stored) : [];
+    } catch (e) {
+        return [];
+    }
+}
+
+function saveCheckedSteps(recipeId, checkedSteps) {
+    try {
+        localStorage.setItem(`voedzame-steps-${recipeId}`, JSON.stringify(checkedSteps));
+    } catch (e) {
+        console.error('Error saving step state:', e);
+    }
+}
+
+function toggleStepCheck(recipeId, stepIndex) {
+    const checkedSteps = getCheckedSteps(recipeId);
+    const index = checkedSteps.indexOf(stepIndex);
+    
+    if (index === -1) {
+        checkedSteps.push(stepIndex);
+    } else {
+        checkedSteps.splice(index, 1);
+    }
+    
+    saveCheckedSteps(recipeId, checkedSteps);
+    
+    // Update the UI for the specific step
+    const stepItem = document.querySelector(`.step-item[data-step="${stepIndex}"]`);
+    if (stepItem) {
+        stepItem.classList.toggle('checked', checkedSteps.includes(stepIndex));
+    }
+}
+
+function resetAllSteps(recipeId) {
+    saveCheckedSteps(recipeId, []);
+    // Re-render the detail view
+    const recipe = recipes.find(r => r.id === recipeId);
+    if (recipe) {
+        renderRecipeDetail(recipe);
+    }
+    showToast('Alle stappen gereset');
+}
+
 // ===== EVENT LISTENERS =====
 function setupEventListeners() {
     tabBtns.forEach(btn => {
         btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+    });
+}
+
+// ===== FILTER PILLS =====
+function setupFilterPills() {
+    const filterPills = document.querySelectorAll('.filter-pill');
+    filterPills.forEach(pill => {
+        pill.addEventListener('click', () => {
+            filterPills.forEach(p => p.classList.remove('active'));
+            pill.classList.add('active');
+            currentFilter = pill.dataset.filter;
+            renderRecipes();
+        });
     });
 }
 
@@ -406,7 +392,13 @@ function closeDetail() {
 
 // ===== RENDER FUNCTIONS =====
 function renderRecipes() {
-    recipesList.innerHTML = recipes.map(recipe => createRecipeCard(recipe)).join('');
+    let filteredRecipes = recipes;
+    
+    if (currentFilter !== 'all') {
+        filteredRecipes = recipes.filter(r => r.category === currentFilter);
+    }
+    
+    recipesList.innerHTML = filteredRecipes.map(recipe => createRecipeCard(recipe)).join('');
     addCardListeners(recipesList);
 }
 
@@ -465,20 +457,49 @@ function addCardListeners(container) {
     });
 }
 
-// Format ingredient for display in recipe detail
-function formatIngredientDisplay(ing) {
-    const name = ing.display || capitalizeFirst(ing.ingredient);
-    return `${name} - ${formatAmount(ing.amount, ing.unit)}`;
-}
-
 // Capitalize first letter
 function capitalizeFirst(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
+// Format step text with quantities highlighted
+function formatStepText(stepText) {
+    // Match text in parentheses like (2 el), (400g), (1 kleine)
+    return stepText.replace(/\(([^)]+)\)/g, '<span class="step-quantity">($1)</span>');
+}
+
 function renderRecipeDetail(recipe) {
     const isFavorite = favorites.includes(recipe.id);
     const inShopping = shoppingRecipes.find(r => r.recipeId === recipe.id);
+    const isSoup = recipe.category === 'soep';
+    const checkedSteps = isSoup ? getCheckedSteps(recipe.id) : [];
+
+    let stepsSection = '';
+    if (isSoup && recipe.steps) {
+        stepsSection = `
+            <div class="detail-section">
+                <div class="detail-section-header">
+                    <h2 class="detail-section-title">Bereiding</h2>
+                    <button class="reset-steps-btn" onclick="resetAllSteps(${recipe.id})">
+                        Reset stappen
+                    </button>
+                </div>
+                <div class="steps-list">
+                    ${recipe.steps.map((step, index) => `
+                        <div class="step-item ${checkedSteps.includes(index) ? 'checked' : ''}" 
+                             data-step="${index}"
+                             onclick="toggleStepCheck(${recipe.id}, ${index})">
+                            <div class="step-checkbox ${checkedSteps.includes(index) ? 'checked' : ''}">
+                                ${checkedSteps.includes(index) ? '✓' : ''}
+                            </div>
+                            <span class="step-number">${index + 1}</span>
+                            <span class="step-text">${formatStepText(step)}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
 
     detailView.innerHTML = `
         <div class="detail-mini-header">
@@ -520,12 +541,14 @@ function renderRecipeDetail(recipe) {
                     ${recipe.ingredients.map(ing => `
                         <li class="ingredient-item">
                             <span class="ingredient-bullet"></span>
-                            <span class="ingredient-name">${ing.display || capitalizeFirst(ing.ingredient)}</span>
-                            <span class="ingredient-amount">${formatAmount(ing.amount, ing.unit)}</span>
+                            <span class="ingredient-name">${ing.display}</span>
+                            <span class="ingredient-amount">${ing.amount}</span>
                         </li>
                     `).join('')}
                 </ul>
             </div>
+
+            ${stepsSection}
 
             <div class="portion-selector">
                 <label>Aantal porties:</label>
@@ -609,29 +632,9 @@ function toggleFavorite(recipeId) {
 
 // ===== SMART SHOPPING LIST =====
 
-// Format amount with smart unit conversion
-function formatAmount(value, unit) {
-    // Convert ml to liters for large amounts
-    if (unit === 'ml' && value >= 750) {
-        const liters = value / 1000;
-        const roundedLiters = Math.round(liters * 2) / 2;
-        return `${roundedLiters} L`;
-    }
-
-    // Convert grams to kg for very large amounts
-    if (unit === 'g' && value >= 1000) {
-        const kg = value / 1000;
-        const roundedKg = Math.round(kg * 10) / 10;
-        return `${roundedKg} kg`;
-    }
-
-    // Round to 1 decimal if needed
-    let displayValue = Math.round(value * 10) / 10;
-    if (displayValue === Math.floor(displayValue)) {
-        displayValue = Math.floor(displayValue);
-    }
-
-    return `${displayValue} ${unit}`;
+// Format amount for display
+function formatAmount(ingredient) {
+    return ingredient.amount;
 }
 
 // Calculate combined ingredients grouped by aisle
@@ -648,18 +651,16 @@ function calculateCombinedIngredients() {
             if (!combined[key]) {
                 combined[key] = {
                     ingredient: ing.ingredient,
-                    display: ing.display || capitalizeFirst(ing.ingredient),
-                    amounts: {},
+                    display: ing.display,
+                    amounts: [],
                     sources: []
                 };
             }
 
-            // Add to amounts by unit
-            const unitKey = ing.unit;
-            if (!combined[key].amounts[unitKey]) {
-                combined[key].amounts[unitKey] = 0;
+            // Add amount (multiplied by portions)
+            for (let i = 0; i < sr.portions; i++) {
+                combined[key].amounts.push(ing.amount);
             }
-            combined[key].amounts[unitKey] += ing.amount * sr.portions;
 
             // Track sources
             const existingSource = combined[key].sources.find(s => s.recipeId === sr.recipeId);
@@ -788,11 +789,14 @@ function renderShoppingList() {
         grouped[aisle].forEach(ing => {
             const isChecked = checkedIngredients.includes(ing.key);
 
-            // Format amounts
-            const amountParts = Object.entries(ing.amounts).map(([unit, value]) => {
-                return formatAmount(value, unit);
+            // Format amounts - combine same amounts
+            const amountCounts = {};
+            ing.amounts.forEach(amt => {
+                amountCounts[amt] = (amountCounts[amt] || 0) + 1;
             });
-            const amountStr = amountParts.join(' + ');
+            const amountStr = Object.entries(amountCounts).map(([amt, count]) => {
+                return count > 1 ? `${count}x ${amt}` : amt;
+            }).join(' + ');
 
             ingredientsHTML += `
                 <div class="shopping-item ${isChecked ? 'checked' : ''}" data-ingredient="${ing.key}">
@@ -834,7 +838,7 @@ function renderShoppingList() {
         </div>
 
         <div class="shopping-recipes-section">
-            <h3 class="shopping-recipes-title">Shakes op deze lijst</h3>
+            <h3 class="shopping-recipes-title">Recepten op deze lijst</h3>
             ${recipesHTML}
         </div>
     `;
@@ -855,15 +859,20 @@ function copyShoppingList() {
         grouped[aisle].forEach(ing => {
             if (checkedIngredients.includes(ing.key)) return;
 
-            const amountParts = Object.entries(ing.amounts).map(([unit, value]) => {
-                return formatAmount(value, unit);
+            const amountCounts = {};
+            ing.amounts.forEach(amt => {
+                amountCounts[amt] = (amountCounts[amt] || 0) + 1;
             });
-            lines.push(`• ${ing.display} - ${amountParts.join(' + ')}`);
+            const amountStr = Object.entries(amountCounts).map(([amt, count]) => {
+                return count > 1 ? `${count}x ${amt}` : amt;
+            }).join(' + ');
+
+            lines.push(`• ${ing.display} - ${amountStr}`);
         });
     });
 
     // Add recipe summary
-    lines.push('\n🥤 Shakes:');
+    lines.push('\n🍽️ Recepten:');
     shoppingRecipes.forEach(sr => {
         const recipe = recipes.find(r => r.id === sr.recipeId);
         if (recipe) {

@@ -24,8 +24,8 @@
     <!-- Header -->
     <header class="header">
         <div class="header-content">
-            <h1>🥤 Voedzame Shakes</h1>
-            <span class="header-subtitle">Heerlijke voedingsshakes</span>
+            <h1>🥤 Voedzame Recepten</h1>
+            <span class="header-subtitle">Heerlijke voedzame recepten</span>
         </div>
         <button id="update-btn" class="update-btn" onclick="checkForUpdates()" aria-label="Check voor updates"></button>
     </header>
@@ -34,6 +34,11 @@
     <main class="main">
         <!-- Recipes View -->
         <section id="recipes-view" class="view active">
+            <div class="filter-pills">
+                <button class="filter-pill active" data-filter="all">Alles</button>
+                <button class="filter-pill" data-filter="shake">Shakes</button>
+                <button class="filter-pill" data-filter="soep">Soepen</button>
+            </div>
             <div id="recipes-list" class="recipe-list">
                 <!-- Recipes loaded via JS -->
             </div>

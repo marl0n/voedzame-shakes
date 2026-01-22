@@ -1142,6 +1142,157 @@ button, a, input, select, textarea {
 .gradient-green-keto { background: linear-gradient(135deg, #E8F5E9 0%, #A5D6A7 100%); }
 .gradient-creamy-cacao { background: linear-gradient(135deg, #4E342E 0%, #795548 100%); }
 
+/* Soup gradients */
+.gradient-tomato-soup { background: linear-gradient(135deg, #FFCCBC 0%, #FF8A65 100%); }
+.gradient-broccoli-soup { background: linear-gradient(135deg, #C8E6C9 0%, #66BB6A 100%); }
+.gradient-courgette-soup { background: linear-gradient(135deg, #DCEDC8 0%, #AED581 100%); }
+.gradient-carrot-soup { background: linear-gradient(135deg, #FFE0B2 0%, #FFB74D 100%); }
+
+/* ===== FILTER PILLS ===== */
+.filter-pills {
+    display: flex;
+    gap: var(--spacing-2);
+    margin-bottom: var(--spacing-5);
+    overflow-x: auto;
+    padding: var(--spacing-1) 0;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+.filter-pills::-webkit-scrollbar {
+    display: none;
+}
+
+.filter-pill {
+    padding: var(--spacing-3) var(--spacing-5);
+    border-radius: var(--radius-full);
+    border: 2px solid var(--gray-100);
+    background: var(--white);
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--gray-600);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    min-height: 48px;
+}
+
+.filter-pill:hover {
+    border-color: var(--sage-green);
+    color: var(--sage-green);
+}
+
+.filter-pill.active {
+    background: linear-gradient(135deg, var(--sage-green) 0%, var(--sage-dark) 100%);
+    border-color: var(--sage-green);
+    color: var(--white);
+}
+
+/* ===== STEPS LIST (SOUPS) ===== */
+.steps-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+}
+
+.step-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-3);
+    padding: var(--spacing-4);
+    background: var(--warm-cream);
+    border-radius: var(--radius-xl);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.step-item:hover {
+    background: var(--soft-peach);
+}
+
+.step-item.checked {
+    opacity: 0.5;
+}
+
+.step-item.checked .step-text {
+    text-decoration: line-through;
+    color: var(--gray-500);
+}
+
+.step-checkbox {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    border: 3px solid var(--gray-100);
+    border-radius: var(--radius-xl);
+    background: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 700;
+    color: transparent;
+    transition: all 0.2s ease;
+}
+
+.step-checkbox.checked {
+    background: var(--sage-green);
+    border-color: var(--sage-green);
+    color: var(--white);
+}
+
+.step-item .step-number {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    background: linear-gradient(135deg, var(--sage-green) 0%, var(--sage-dark) 100%);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-weight: 700;
+    font-size: var(--font-size-sm);
+    margin-top: 2px;
+}
+
+.step-item .step-text {
+    flex: 1;
+    font-size: var(--font-size-lg);
+    color: var(--gray-700);
+    line-height: 1.5;
+}
+
+/* Step quantity styling - muted color */
+.step-quantity {
+    color: var(--gray-500);
+    font-weight: 500;
+}
+
+/* Reset steps button */
+.reset-steps-btn {
+    padding: var(--spacing-2) var(--spacing-4);
+    border-radius: var(--radius-xl);
+    border: 2px solid var(--gray-100);
+    background: var(--white);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--gray-600);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.reset-steps-btn:hover {
+    border-color: var(--terracotta);
+    color: var(--terracotta);
+}
+
+.reset-steps-btn:active {
+    background: var(--terracotta);
+    border-color: var(--terracotta);
+    color: var(--white);
+}
+
 /* ===== RESPONSIVE ===== */
 @media (min-width: 600px) {
     .recipe-list {
