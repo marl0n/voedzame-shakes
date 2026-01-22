@@ -644,13 +644,19 @@ function renderRecipeDetail(recipe) {
     }
 
     detailView.innerHTML = `
+        <div class="detail-hero ${recipe.gradient}">
+            <button class="back-btn-hero" onclick="closeDetail()">${icons.chevronLeft}</button>
+            <span class="detail-hero-emoji">${recipe.emoji}</span>
+            <h1 class="detail-hero-title">${recipe.name}</h1>
+        </div>
+
         <div class="detail-compact-header">
             <button class="back-btn-compact" onclick="closeDetail()">${icons.chevronLeft}</button>
             <span class="detail-compact-emoji">${recipe.emoji}</span>
             <span class="detail-compact-title">${recipe.name}</span>
         </div>
 
-        <div class="detail-content ${recipe.gradient}">
+        <div class="detail-content">
             <div class="detail-stats">
                 <div class="detail-stat protein">
                     <div class="detail-stat-icon">${icons.leaf}</div>
@@ -732,7 +738,35 @@ function renderRecipeDetail(recipe) {
         addToShoppingList(recipe.id, portions);
     });
 
+    // Setup collapsing header scroll listener
+    setupDetailScroll();
+}
+
+let detailScrollHandler = null;
+
+function setupDetailScroll() {
+    if (detailScrollHandler) {
+        window.removeEventListener('scroll', detailScrollHandler);
     }
+
+    const compactHeader = document.querySelector('.detail-compact-header');
+    const heroHeader = document.querySelector('.detail-hero');
+
+    if (!compactHeader || !heroHeader) return;
+
+    detailScrollHandler = () => {
+        const scrollY = window.scrollY;
+        const threshold = 100; // Show compact header after scrolling 100px
+
+        if (scrollY > threshold) {
+            compactHeader.classList.add('visible');
+        } else {
+            compactHeader.classList.remove('visible');
+        }
+    };
+
+    window.addEventListener('scroll', detailScrollHandler);
+}
 
 function adjustPortionSelector(delta, min = 1) {
     const countEl = document.getElementById('portion-count');

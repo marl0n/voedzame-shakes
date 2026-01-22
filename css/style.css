@@ -430,7 +430,7 @@ button, a, input, select, textarea {
 /* ===== DETAIL VIEW ===== */
 #detail-view {
     padding: 0;
-    padding-bottom: 100px;
+    padding-bottom: 40px;
     /* Break out of .main container to go full-width */
     margin-left: calc(-1 * var(--spacing-6));
     margin-right: calc(-1 * var(--spacing-6));
@@ -439,7 +439,67 @@ button, a, input, select, textarea {
     max-width: none;
 }
 
-/* Compact fixed header */
+/* Hero header - large, with gradient */
+.detail-hero {
+    position: relative;
+    height: 180px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: var(--spacing-5);
+    background: linear-gradient(135deg, var(--soft-peach) 0%, var(--warm-cream) 100%);
+}
+
+.detail-hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    background: linear-gradient(to bottom, transparent, var(--white));
+    pointer-events: none;
+}
+
+.back-btn-hero {
+    position: absolute;
+    top: var(--spacing-4);
+    left: var(--spacing-4);
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-full);
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gray-700);
+    box-shadow: var(--shadow-sm);
+}
+
+.back-btn-hero:active {
+    transform: scale(0.95);
+}
+
+.detail-hero-emoji {
+    position: absolute;
+    top: var(--spacing-4);
+    right: var(--spacing-4);
+    font-size: 56px;
+}
+
+.detail-hero-title {
+    font-size: var(--font-size-3xl);
+    font-weight: 700;
+    color: var(--gray-900);
+    line-height: 1.2;
+    margin: 0;
+    padding-right: 80px; /* Space for emoji */
+    z-index: 1;
+}
+
+/* Compact header - appears on scroll */
 .detail-compact-header {
     position: fixed;
     top: 0;
@@ -453,6 +513,12 @@ button, a, input, select, textarea {
     padding: 0 var(--spacing-4);
     box-shadow: var(--shadow-md);
     z-index: 1000;
+    transform: translateY(-100%);
+    transition: transform 0.2s ease;
+}
+
+.detail-compact-header.visible {
+    transform: translateY(0);
 }
 
 .back-btn-compact {
@@ -470,12 +536,11 @@ button, a, input, select, textarea {
 }
 
 .back-btn-compact:active {
-    background: var(--gray-100);
     transform: scale(0.95);
 }
 
 .detail-compact-emoji {
-    font-size: 32px;
+    font-size: 28px;
     flex-shrink: 0;
 }
 
@@ -488,25 +553,12 @@ button, a, input, select, textarea {
     text-overflow: ellipsis;
 }
 
-/* Detail content - now includes gradient hero area */
+/* Detail content - white background */
 .detail-content {
     background: var(--white);
     position: relative;
-    padding: var(--spacing-6);
-    padding-top: calc(64px + var(--spacing-6)); /* Space for fixed header */
-    padding-bottom: var(--spacing-8);
-}
-
-/* Gradient hero section at top of content */
-.detail-content::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 180px;
-    background: inherit;
-    z-index: -1;
+    padding: var(--spacing-5);
+    padding-bottom: var(--spacing-6);
 }
 
 
