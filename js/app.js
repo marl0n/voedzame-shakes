@@ -646,13 +646,16 @@ function renderRecipeDetail(recipe) {
     detailView.innerHTML = `
         <div class="detail-header-wrapper">
             <div class="detail-header-bg ${recipe.gradient}"></div>
+            <button class="detail-back-btn" onclick="closeDetail()">
+                <span class="back-btn-bg-large"></span>
+                <span class="back-btn-bg-compact"></span>
+                <span class="back-btn-icon">${icons.chevronLeft}</span>
+            </button>
             <div class="detail-header-large">
-                <button class="detail-back-btn" onclick="closeDetail()">${icons.chevronLeft}</button>
                 <span class="detail-emoji-large">${recipe.emoji}</span>
                 <h1 class="detail-title-large">${recipe.name}</h1>
             </div>
             <div class="detail-header-compact">
-                <button class="detail-back-btn" onclick="closeDetail()">${icons.chevronLeft}</button>
                 <span class="detail-emoji-compact">${recipe.emoji}</span>
                 <span class="detail-title-compact">${recipe.name}</span>
             </div>
@@ -755,19 +758,25 @@ function setupDetailScroll() {
     const headerBg = document.querySelector('.detail-header-bg');
     const largeHeader = document.querySelector('.detail-header-large');
     const compactHeader = document.querySelector('.detail-header-compact');
+    const backBtn = document.querySelector('.detail-back-btn');
+    const backBgLarge = document.querySelector('.back-btn-bg-large');
+    const backBgCompact = document.querySelector('.back-btn-bg-compact');
     
-    if (!wrapper || !headerBg || !largeHeader || !compactHeader) return;
+    if (!wrapper || !headerBg || !largeHeader || !compactHeader || !backBtn) return;
 
     // Header shrinks from 160px to 64px = 96px difference
-    // Animation runs exactly 1:1 with scroll
     const largeHeight = 160;
     const compactHeight = 64;
     const scrollDistance = largeHeight - compactHeight; // 96px
+    
+    // Back button positions and sizes
+    const btnLarge = { top: 16, left: 16, size: 44 };
+    const btnCompact = { top: 10, left: 16, size: 44 };
 
     detailScrollHandler = () => {
         const scrollY = window.scrollY;
         
-        // Progress 0-1 over exactly 96px of scroll (1:1 with header shrink)
+        // Progress 0-1 over exactly 96px of scroll
         let progress = scrollY / scrollDistance;
         progress = Math.max(0, Math.min(1, progress));
         
@@ -775,6 +784,16 @@ function setupDetailScroll() {
         const height = largeHeight - Math.min(scrollY, scrollDistance);
         wrapper.style.height = `${height}px`;
         headerBg.style.height = `${height}px`;
+        
+        // Back button: interpolate position (scale + move)
+        const btnTop = btnLarge.top + (btnCompact.top - btnLarge.top) * progress;
+        backBtn.style.top = `${btnTop}px`;
+        
+        // Back button backgrounds: crossfade for color change
+        if (backBgLarge && backBgCompact) {
+            backBgLarge.style.opacity = 1 - progress;
+            backBgCompact.style.opacity = progress;
+        }
         
         // Large text/emoji: fade out
         largeHeader.style.opacity = 1 - progress;

@@ -471,11 +471,6 @@ button, a, input, select, textarea {
     will-change: opacity;
 }
 
-.detail-header-large .detail-back-btn {
-    position: absolute;
-    top: var(--spacing-4);
-    left: var(--spacing-4);
-}
 
 .detail-emoji-large {
     position: absolute;
@@ -524,25 +519,50 @@ button, a, input, select, textarea {
     flex: 1;
 }
 
-/* Shared back button style */
+/* Back button - positioned and scaled by JS */
 .detail-back-btn {
+    position: absolute;
+    top: 16px; /* JS controls this */
+    left: 16px;
     width: 44px;
     height: 44px;
     border-radius: var(--radius-full);
-    background: rgba(255, 255, 255, 0.9);
+    background: transparent;
     border: none;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--gray-700);
-    box-shadow: var(--shadow-sm);
-    flex-shrink: 0;
+    z-index: 10;
+    overflow: hidden;
 }
 
-.detail-header-compact .detail-back-btn {
+/* Two background layers for color crossfade */
+.back-btn-bg-large,
+.back-btn-bg-compact {
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-full);
+    transition: none;
+}
+
+.back-btn-bg-large {
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: var(--shadow-sm);
+}
+
+.back-btn-bg-compact {
     background: rgba(255, 255, 255, 0.3);
-    box-shadow: none;
+    opacity: 0; /* JS controls this */
+}
+
+.back-btn-icon {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .detail-back-btn:active {
