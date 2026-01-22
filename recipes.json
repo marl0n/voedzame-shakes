@@ -230,7 +230,6 @@
       "category": "soep",
       "servings": 4,
       "servingsUnit": "kommen",
-      "warning": "⚠️ Gebruik alleen de grote kan voor soepen. Laat afkoelen tot ~70°C. Vul nooit boven de MAX-streep. Gebruik NOOIT de kleine bekers voor warme vloeistoffen.",
       "ingredients": [
         { "item": "Eieren", "amount": "4 stuks" },
         { "item": "Gepelde tomaten (blik)", "amount": "800 gram" },
@@ -268,7 +267,6 @@
       "category": "soep",
       "servings": 4,
       "servingsUnit": "kommen",
-      "warning": "⚠️ Gebruik alleen de grote kan voor soepen. Laat afkoelen tot ~70°C. Vul nooit boven de MAX-streep. Gebruik NOOIT de kleine bekers voor warme vloeistoffen.",
       "ingredients": [
         { "item": "Eieren", "amount": "4 stuks" },
         { "item": "Broccoli roosjes", "amount": "600 gram" },
@@ -304,7 +302,6 @@
       "category": "soep",
       "servings": 4,
       "servingsUnit": "kommen",
-      "warning": "⚠️ Gebruik alleen de grote kan voor soepen. Laat afkoelen tot ~70°C. Vul nooit boven de MAX-streep. Gebruik NOOIT de kleine bekers voor warme vloeistoffen.",
       "ingredients": [
         { "item": "Eieren", "amount": "4 stuks" },
         { "item": "Courgettes", "amount": "3 stuks" },
@@ -341,7 +338,6 @@
       "category": "soep",
       "servings": 4,
       "servingsUnit": "kommen",
-      "warning": "⚠️ Gebruik alleen de grote kan voor soepen. Laat afkoelen tot ~70°C. Vul nooit boven de MAX-streep. Gebruik NOOIT de kleine bekers voor warme vloeistoffen.",
       "ingredients": [
         { "item": "Kipfilet", "amount": "250 gram" },
         { "item": "Wortels", "amount": "600 gram" },

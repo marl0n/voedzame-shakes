@@ -461,8 +461,34 @@ function renderRecipes() {
     // Sort by protein, high to low
     filteredRecipes = [...filteredRecipes].sort((a, b) => b.protein - a.protein);
     
-    recipesList.innerHTML = filteredRecipes.map(recipe => createRecipeCard(recipe)).join('');
+    // Build HTML with optional soup warning banner
+    let html = '';
+    
+    // Show safety warning for soups (if not dismissed)
+    if (currentFilter === 'soep' && !isSoupWarningDismissed()) {
+        html += `
+            <div class="safety-warning-banner" id="soup-warning-banner">
+                <p class="warning-text">⚠️ Gebruik alleen de grote kan voor soepen. Laat afkoelen tot ~70°C en vul nooit boven de MAX-streep.</p>
+                <button class="safety-warning-dismiss" onclick="dismissSoupWarning()" aria-label="Sluiten">✕</button>
+            </div>
+        `;
+    }
+    
+    html += filteredRecipes.map(recipe => createRecipeCard(recipe)).join('');
+    recipesList.innerHTML = html;
     addCardListeners(recipesList);
+}
+
+function isSoupWarningDismissed() {
+    return localStorage.getItem('voedzame-soup-warning-dismissed') === 'true';
+}
+
+function dismissSoupWarning() {
+    localStorage.setItem('voedzame-soup-warning-dismissed', 'true');
+    const banner = document.getElementById('soup-warning-banner');
+    if (banner) {
+        banner.style.display = 'none';
+    }
 }
 
 function renderFavorites() {
