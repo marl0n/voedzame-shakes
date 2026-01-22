@@ -439,32 +439,42 @@ button, a, input, select, textarea {
     max-width: none;
 }
 
-/* Morphing header - starts large, shrinks on scroll */
+/* Morphing header - smooth transition using transforms */
 .detail-header {
     position: sticky;
     top: 0;
     z-index: 1000;
-    height: 160px;
     display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    padding: var(--spacing-4);
-    transition: height 0.25s ease, padding 0.25s ease, box-shadow 0.25s ease;
+    align-items: center;
+    gap: var(--spacing-3);
+    padding: var(--spacing-3) var(--spacing-4);
+    min-height: 64px;
+    transition: box-shadow 0.3s ease;
+}
+
+/* Expanded state (default) - extra padding at top for larger appearance */
+.detail-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100px;
+    background: inherit;
+    z-index: -1;
+    transition: height 0.3s ease;
+}
+
+.detail-header.scrolled::before {
+    height: 64px;
 }
 
 .detail-header.scrolled {
-    height: 64px;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-start;
-    gap: var(--spacing-3);
     box-shadow: var(--shadow-md);
 }
 
+/* Back button */
 .detail-header-back {
-    position: absolute;
-    top: var(--spacing-4);
-    left: var(--spacing-4);
     width: 44px;
     height: 44px;
     border-radius: var(--radius-full);
@@ -476,54 +486,56 @@ button, a, input, select, textarea {
     justify-content: center;
     color: var(--gray-700);
     box-shadow: var(--shadow-sm);
-    transition: all 0.25s ease;
     flex-shrink: 0;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+    margin-top: 50px;
 }
 
 .detail-header.scrolled .detail-header-back {
-    position: relative;
-    top: 0;
-    left: 0;
     background: rgba(255, 255, 255, 0.3);
     box-shadow: none;
+    margin-top: 0;
 }
 
 .detail-header-back:active {
     transform: scale(0.95);
 }
 
+/* Emoji */
 .detail-header-emoji {
-    position: absolute;
-    top: var(--spacing-4);
-    right: var(--spacing-4);
-    font-size: 52px;
-    transition: all 0.25s ease;
+    font-size: 48px;
+    flex-shrink: 0;
+    transition: font-size 0.3s ease, margin 0.3s ease;
+    margin-top: 50px;
+    order: 3;
+    margin-left: auto;
 }
 
 .detail-header.scrolled .detail-header-emoji {
-    position: relative;
-    top: 0;
-    right: 0;
     font-size: 28px;
+    margin-top: 0;
+    order: 0;
+    margin-left: 0;
 }
 
+/* Title */
 .detail-header-title {
-    font-size: var(--font-size-3xl);
+    font-size: var(--font-size-2xl);
     font-weight: 700;
     color: var(--gray-900);
     line-height: 1.2;
     margin: 0;
-    padding-right: 70px; /* Space for emoji */
-    transition: all 0.25s ease;
+    flex: 1;
+    transition: font-size 0.3s ease, margin 0.3s ease;
+    margin-top: 50px;
 }
 
 .detail-header.scrolled .detail-header-title {
     font-size: var(--font-size-lg);
-    padding-right: 0;
+    margin-top: 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    flex: 1;
 }
 
 /* Detail content - light tinted background */
@@ -534,27 +546,81 @@ button, a, input, select, textarea {
     min-height: 100vh;
 }
 
-/* Light background variants for content */
-.gradient-banana-light { background: linear-gradient(180deg, #FFFDF5 0%, var(--white) 100%); }
-.gradient-chocolate-light { background: linear-gradient(180deg, #FAF8F7 0%, var(--white) 100%); }
-.gradient-berry-light { background: linear-gradient(180deg, #FFF8FA 0%, var(--white) 100%); }
-.gradient-mango-light { background: linear-gradient(180deg, #FFFCF5 0%, var(--white) 100%); }
-.gradient-apple-light { background: linear-gradient(180deg, #FFF8F8 0%, var(--white) 100%); }
-.gradient-vanilla-light { background: linear-gradient(180deg, #FFFDF5 0%, var(--white) 100%); }
-.gradient-strawberry-light { background: linear-gradient(180deg, #FFF8FA 0%, var(--white) 100%); }
-.gradient-pear-light { background: linear-gradient(180deg, #F8FDF8 0%, var(--white) 100%); }
-.gradient-green-keto-light { background: linear-gradient(180deg, #F8FDF8 0%, var(--white) 100%); }
-.gradient-creamy-cacao-light { background: linear-gradient(180deg, #F5F3F2 0%, var(--white) 100%); }
+/* Light background variants for content - with CSS custom properties for accent colors */
+.gradient-banana-light { 
+    background: linear-gradient(180deg, #FFF8E1 0%, #FFFDF8 50%, var(--white) 100%);
+    --accent-light: #FFF8E1; --accent-medium: #FFECB3; --accent-check: #F9A825;
+}
+.gradient-chocolate-light { 
+    background: linear-gradient(180deg, #EFEBE9 0%, #F8F6F5 50%, var(--white) 100%);
+    --accent-light: #EFEBE9; --accent-medium: #D7CCC8; --accent-check: #6D4C41;
+}
+.gradient-berry-light { 
+    background: linear-gradient(180deg, #FCE4EC 0%, #FFF5F8 50%, var(--white) 100%);
+    --accent-light: #FCE4EC; --accent-medium: #F8BBD0; --accent-check: #C2185B;
+}
+.gradient-mango-light { 
+    background: linear-gradient(180deg, #FFF3E0 0%, #FFFAF5 50%, var(--white) 100%);
+    --accent-light: #FFF3E0; --accent-medium: #FFCC80; --accent-check: #F57C00;
+}
+.gradient-apple-light { 
+    background: linear-gradient(180deg, #FFEBEE 0%, #FFF5F5 50%, var(--white) 100%);
+    --accent-light: #FFEBEE; --accent-medium: #FFCDD2; --accent-check: #D32F2F;
+}
+.gradient-vanilla-light { 
+    background: linear-gradient(180deg, #FFF8E1 0%, #FFFDF8 50%, var(--white) 100%);
+    --accent-light: #FFF8E1; --accent-medium: #FFE082; --accent-check: #FFA000;
+}
+.gradient-strawberry-light { 
+    background: linear-gradient(180deg, #FCE4EC 0%, #FFF5F8 50%, var(--white) 100%);
+    --accent-light: #FCE4EC; --accent-medium: #F48FB1; --accent-check: #D81B60;
+}
+.gradient-pear-light { 
+    background: linear-gradient(180deg, #E8F5E9 0%, #F5FAF5 50%, var(--white) 100%);
+    --accent-light: #E8F5E9; --accent-medium: #C8E6C9; --accent-check: #388E3C;
+}
+.gradient-green-keto-light { 
+    background: linear-gradient(180deg, #E8F5E9 0%, #F5FAF5 50%, var(--white) 100%);
+    --accent-light: #E8F5E9; --accent-medium: #A5D6A7; --accent-check: #2E7D32;
+}
+.gradient-creamy-cacao-light { 
+    background: linear-gradient(180deg, #EFEBE9 0%, #F8F6F5 50%, var(--white) 100%);
+    --accent-light: #EFEBE9; --accent-medium: #BCAAA4; --accent-check: #5D4037;
+}
 
 /* Soup gradient lights */
-.gradient-tomato-soup-light { background: linear-gradient(180deg, #FFF8F5 0%, var(--white) 100%); }
-.gradient-broccoli-soup-light { background: linear-gradient(180deg, #F5FDF5 0%, var(--white) 100%); }
-.gradient-courgette-soup-light { background: linear-gradient(180deg, #F8FDF5 0%, var(--white) 100%); }
-.gradient-carrot-soup-light { background: linear-gradient(180deg, #FFFAF5 0%, var(--white) 100%); }
-.gradient-chicken-soup-light { background: linear-gradient(180deg, #FFFDF5 0%, var(--white) 100%); }
-.gradient-mushroom-soup-light { background: linear-gradient(180deg, #FAF8F5 0%, var(--white) 100%); }
-.gradient-spinach-soup-light { background: linear-gradient(180deg, #F5FDF8 0%, var(--white) 100%); }
-.gradient-cauliflower-soup-light { background: linear-gradient(180deg, #FFFDF8 0%, var(--white) 100%); }
+.gradient-tomato-soup-light { 
+    background: linear-gradient(180deg, #FFCCBC 0%, #FFF5F0 50%, var(--white) 100%);
+    --accent-light: #FFCCBC; --accent-medium: #FF8A65; --accent-check: #E64A19;
+}
+.gradient-broccoli-soup-light { 
+    background: linear-gradient(180deg, #C8E6C9 0%, #F0F8F0 50%, var(--white) 100%);
+    --accent-light: #C8E6C9; --accent-medium: #81C784; --accent-check: #388E3C;
+}
+.gradient-courgette-soup-light { 
+    background: linear-gradient(180deg, #DCEDC8 0%, #F5FAF0 50%, var(--white) 100%);
+    --accent-light: #DCEDC8; --accent-medium: #AED581; --accent-check: #689F38;
+}
+.gradient-carrot-soup-light { 
+    background: linear-gradient(180deg, #FFE0B2 0%, #FFF8F0 50%, var(--white) 100%);
+    --accent-light: #FFE0B2; --accent-medium: #FFB74D; --accent-check: #F57C00;
+}
+.gradient-chicken-soup-light { 
+    background: linear-gradient(180deg, #FFF8E1 0%, #FFFDF8 50%, var(--white) 100%);
+    --accent-light: #FFF8E1; --accent-medium: #FFE082; --accent-check: #FFA000;
+}
+.gradient-mushroom-soup-light { 
+    background: linear-gradient(180deg, #D7CCC8 0%, #F5F0ED 50%, var(--white) 100%);
+    --accent-light: #D7CCC8; --accent-medium: #A1887F; --accent-check: #5D4037;
+}
+.gradient-spinach-soup-light { 
+    background: linear-gradient(180deg, #C8E6C9 0%, #F0F8F0 50%, var(--white) 100%);
+    --accent-light: #C8E6C9; --accent-medium: #81C784; --accent-check: #2E7D32;
+}
+.gradient-cauliflower-soup-light { 
+    background: linear-gradient(180deg, #FFF8E1 0%, #FFFDF8 50%, var(--white) 100%);
+    --accent-light: #FFF8E1; --accent-medium: #FFE082; --accent-check: #FFA000;
+}
 
 
 /* Detail stats */
@@ -681,7 +747,7 @@ button, a, input, select, textarea {
     display: flex;
     align-items: center;
     padding: var(--spacing-4);
-    background: var(--warm-cream);
+    background: var(--accent-light, var(--warm-cream));
     border-radius: var(--radius-xl);
     font-size: var(--font-size-lg);
     color: var(--gray-700);
@@ -1328,7 +1394,7 @@ button, a, input, select, textarea {
     align-items: flex-start;
     gap: var(--spacing-4);
     padding: var(--spacing-4);
-    background: var(--warm-cream);
+    background: var(--accent-light, var(--warm-cream));
     border-radius: var(--radius-xl);
     cursor: pointer;
     transition: all 0.2s ease;
@@ -1336,7 +1402,7 @@ button, a, input, select, textarea {
 }
 
 .step-item:hover {
-    background: var(--soft-peach);
+    background: var(--accent-medium, var(--soft-peach));
 }
 
 .step-item:active {
@@ -1375,10 +1441,10 @@ button, a, input, select, textarea {
     color: var(--gray-600);
 }
 
-/* Completed state: green circle with checkmark */
+/* Completed state: accent colored circle with checkmark */
 .step-number.completed {
-    background: linear-gradient(135deg, var(--sage-green) 0%, var(--sage-dark) 100%);
-    border: 2px solid var(--sage-green);
+    background: var(--accent-check, var(--sage-green));
+    border: 2px solid var(--accent-check, var(--sage-green));
     color: var(--white);
 }
 
