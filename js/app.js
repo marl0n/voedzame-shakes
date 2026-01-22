@@ -40,43 +40,6 @@ const aisleIcons = {
     "Groenten": icons.leaf
 };
 
-// ===== EMOJI MAPPING =====
-const recipeEmojis = {
-    "banana-peanut": "🍌",
-    "chocolate-avocado": "🍫",
-    "berry-boost": "🍇",
-    "mango-coconut": "🥭",
-    "apple-cinnamon": "🍎",
-    "vanilla-walnut": "🌰",
-    "strawberry-oat": "🍓",
-    "pear-almond": "🍐",
-    "green-keto": "🥬",
-    "creamy-cacao": "🍫",
-    // Soup emojis
-    "tomato-soup": "🍅",
-    "broccoli-soup": "🥦",
-    "courgette-soup": "🥒",
-    "carrot-soup": "🥕"
-};
-
-// ===== GRADIENT MAPPING =====
-const recipeGradients = {
-    "banana-peanut": "gradient-banana",
-    "chocolate-avocado": "gradient-chocolate",
-    "berry-boost": "gradient-berry",
-    "mango-coconut": "gradient-mango",
-    "apple-cinnamon": "gradient-apple",
-    "vanilla-walnut": "gradient-vanilla",
-    "strawberry-oat": "gradient-strawberry",
-    "pear-almond": "gradient-pear",
-    "green-keto": "gradient-green-keto",
-    "creamy-cacao": "gradient-creamy-cacao",
-    // Soup gradients
-    "tomato-soup": "gradient-tomato-soup",
-    "broccoli-soup": "gradient-broccoli-soup",
-    "courgette-soup": "gradient-courgette-soup",
-    "carrot-soup": "gradient-carrot-soup"
-};
 
 // ===== INGREDIENT DATABASE =====
 // Gangpad volgorde zoals in supermarkt
@@ -196,8 +159,8 @@ async function loadRecipes() {
             id: r.id,
             name: r.name,
             description: r.description,
-            emoji: recipeEmojis[r.image] || "🍽️",
-            gradient: recipeGradients[r.image] || "gradient-banana",
+            emoji: r.emoji || "🍽️",
+            gradient: r.gradient || "gradient-banana",
             kcal: r.calories,
             protein: r.protein,
             category: r.category || "shake",
