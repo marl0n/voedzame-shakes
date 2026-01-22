@@ -433,6 +433,7 @@ function openRecipeDetail(recipeId) {
     const recipe = recipes.find(r => r.id === recipeId);
     if (!recipe) return;
     currentRecipe = recipe;
+    document.body.classList.add('detail-open');
     header.style.display = 'none';
     tabBar.style.display = 'none';
     [recipesView, favoritesView, shoppingView].forEach(v => {
@@ -444,6 +445,7 @@ function openRecipeDetail(recipeId) {
 }
 
 function closeDetail() {
+    document.body.classList.remove('detail-open');
     header.style.display = '';
     tabBar.style.display = '';
     detailView.classList.remove('active');

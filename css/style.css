@@ -86,6 +86,10 @@ body {
     touch-action: manipulation;
 }
 
+body.detail-open {
+    padding-bottom: 0;
+}
+
 /* Prevent zoom on interactive elements */
 button, a, input, select, textarea {
     touch-action: manipulation;
