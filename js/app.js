@@ -490,6 +490,9 @@ function renderRecipes() {
         filteredRecipes = recipes.filter(r => r.category === currentFilter);
     }
     
+    // Sort by protein, high to low
+    filteredRecipes = [...filteredRecipes].sort((a, b) => b.protein - a.protein);
+    
     recipesList.innerHTML = filteredRecipes.map(recipe => createRecipeCard(recipe)).join('');
     addCardListeners(recipesList);
 }
@@ -501,6 +504,9 @@ function renderFavorites() {
     if (favoritesFilter !== 'all') {
         favoriteRecipes = favoriteRecipes.filter(r => r.category === favoritesFilter);
     }
+    
+    // Sort by protein, high to low
+    favoriteRecipes = [...favoriteRecipes].sort((a, b) => b.protein - a.protein);
     
     if (favoriteRecipes.length === 0 && favorites.length === 0) {
         favoritesList.innerHTML = `
