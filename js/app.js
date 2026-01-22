@@ -645,12 +645,13 @@ function renderRecipeDetail(recipe) {
 
     detailView.innerHTML = `
         <div class="detail-header-wrapper">
-            <div class="detail-header-large ${recipe.gradient}">
+            <div class="detail-header-bg ${recipe.gradient}"></div>
+            <div class="detail-header-large">
                 <button class="detail-back-btn" onclick="closeDetail()">${icons.chevronLeft}</button>
                 <span class="detail-emoji-large">${recipe.emoji}</span>
                 <h1 class="detail-title-large">${recipe.name}</h1>
             </div>
-            <div class="detail-header-compact ${recipe.gradient}">
+            <div class="detail-header-compact">
                 <button class="detail-back-btn" onclick="closeDetail()">${icons.chevronLeft}</button>
                 <span class="detail-emoji-compact">${recipe.emoji}</span>
                 <span class="detail-title-compact">${recipe.name}</span>
@@ -751,41 +752,40 @@ function setupDetailScroll() {
     }
 
     const wrapper = document.querySelector('.detail-header-wrapper');
+    const headerBg = document.querySelector('.detail-header-bg');
     const largeHeader = document.querySelector('.detail-header-large');
     const compactHeader = document.querySelector('.detail-header-compact');
     
-    if (!wrapper || !largeHeader || !compactHeader) return;
+    if (!wrapper || !headerBg || !largeHeader || !compactHeader) return;
 
-    const startScroll = 0;
-    const endScroll = 100; // Animation completes over 100px scroll
+    // Header shrinks from 160px to 64px = 96px difference
+    // Animation runs exactly 1:1 with scroll
+    const largeHeight = 160;
+    const compactHeight = 64;
+    const scrollDistance = largeHeight - compactHeight; // 96px
 
     detailScrollHandler = () => {
         const scrollY = window.scrollY;
         
-        // Calculate progress (0 to 1)
-        let progress = (scrollY - startScroll) / (endScroll - startScroll);
-        progress = Math.max(0, Math.min(1, progress)); // Clamp between 0-1
+        // Progress 0-1 over exactly 96px of scroll (1:1 with header shrink)
+        let progress = scrollY / scrollDistance;
+        progress = Math.max(0, Math.min(1, progress));
         
-        // Header height: 160px -> 64px
-        const height = 160 - (progress * 96);
+        // Header bg follows scroll exactly - pushed by content
+        const height = largeHeight - Math.min(scrollY, scrollDistance);
         wrapper.style.height = `${height}px`;
+        headerBg.style.height = `${height}px`;
         
-        // Large header: scale 1 -> 0.9, opacity 1 -> 0
-        const scale = 1 - (progress * 0.1);
-        largeHeader.style.transform = `scale(${scale})`;
-        largeHeader.style.transformOrigin = 'top center';
+        // Large text/emoji: fade out
         largeHeader.style.opacity = 1 - progress;
+        largeHeader.style.pointerEvents = progress > 0.5 ? 'none' : 'auto';
         
-        // Compact header: opacity 0 -> 1
+        // Compact text/emoji: fade in
         compactHeader.style.opacity = progress;
         compactHeader.style.pointerEvents = progress > 0.5 ? 'auto' : 'none';
         
-        // Shadow on compact header when scrolled
-        if (progress >= 1) {
-            compactHeader.style.boxShadow = 'var(--shadow-md)';
-        } else {
-            compactHeader.style.boxShadow = 'none';
-        }
+        // Shadow when fully scrolled
+        wrapper.style.boxShadow = progress >= 1 ? 'var(--shadow-md)' : 'none';
     };
 
     // Initial call

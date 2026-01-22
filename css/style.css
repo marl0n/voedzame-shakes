@@ -445,9 +445,19 @@ button, a, input, select, textarea {
     top: 0;
     z-index: 1000;
     height: 160px; /* JS controls this */
+    overflow: hidden;
 }
 
-/* Large header - scales down on scroll */
+/* Header background - the gradient that shrinks with scroll */
+.detail-header-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 160px; /* JS controls this */
+}
+
+/* Large header content - text/emoji that fade out */
 .detail-header-large {
     position: absolute;
     top: 0;
@@ -458,7 +468,7 @@ button, a, input, select, textarea {
     flex-direction: column;
     justify-content: flex-end;
     padding: var(--spacing-4);
-    will-change: transform, opacity;
+    will-change: opacity;
 }
 
 .detail-header-large .detail-back-btn {
