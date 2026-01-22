@@ -751,19 +751,46 @@ function setupDetailScroll() {
     }
 
     const wrapper = document.querySelector('.detail-header-wrapper');
-    if (!wrapper) return;
+    const largeHeader = document.querySelector('.detail-header-large');
+    const compactHeader = document.querySelector('.detail-header-compact');
+    
+    if (!wrapper || !largeHeader || !compactHeader) return;
+
+    const startScroll = 0;
+    const endScroll = 100; // Animation completes over 100px scroll
 
     detailScrollHandler = () => {
         const scrollY = window.scrollY;
-        const threshold = 80; // Crossfade after 80px scroll
-
-        if (scrollY > threshold) {
-            wrapper.classList.add('scrolled');
+        
+        // Calculate progress (0 to 1)
+        let progress = (scrollY - startScroll) / (endScroll - startScroll);
+        progress = Math.max(0, Math.min(1, progress)); // Clamp between 0-1
+        
+        // Header height: 160px -> 64px
+        const height = 160 - (progress * 96);
+        wrapper.style.height = `${height}px`;
+        
+        // Large header: scale 1 -> 0.9, opacity 1 -> 0
+        const scale = 1 - (progress * 0.1);
+        largeHeader.style.transform = `scale(${scale})`;
+        largeHeader.style.transformOrigin = 'top center';
+        largeHeader.style.opacity = 1 - progress;
+        
+        // Compact header: opacity 0 -> 1
+        compactHeader.style.opacity = progress;
+        compactHeader.style.pointerEvents = progress > 0.5 ? 'auto' : 'none';
+        
+        // Shadow on compact header when scrolled
+        if (progress >= 1) {
+            compactHeader.style.boxShadow = 'var(--shadow-md)';
         } else {
-            wrapper.classList.remove('scrolled');
+            compactHeader.style.boxShadow = 'none';
         }
     };
 
+    // Initial call
+    detailScrollHandler();
+    
     window.addEventListener('scroll', detailScrollHandler);
 }
 

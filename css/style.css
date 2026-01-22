@@ -444,15 +444,10 @@ button, a, input, select, textarea {
     position: sticky;
     top: 0;
     z-index: 1000;
-    height: 160px;
-    transition: height 0.35s ease;
+    height: 160px; /* JS controls this */
 }
 
-.detail-header-wrapper.scrolled {
-    height: 64px;
-}
-
-/* Large header - visible by default, fades out on scroll */
+/* Large header - scales down on scroll */
 .detail-header-large {
     position: absolute;
     top: 0;
@@ -463,13 +458,7 @@ button, a, input, select, textarea {
     flex-direction: column;
     justify-content: flex-end;
     padding: var(--spacing-4);
-    opacity: 1;
-    transition: opacity 0.35s ease;
-}
-
-.detail-header-wrapper.scrolled .detail-header-large {
-    opacity: 0;
-    pointer-events: none;
+    will-change: transform, opacity;
 }
 
 .detail-header-large .detail-back-btn {
@@ -494,7 +483,7 @@ button, a, input, select, textarea {
     padding-right: 80px;
 }
 
-/* Compact header - hidden by default, fades in on scroll */
+/* Compact header - fades in on scroll */
 .detail-header-compact {
     position: absolute;
     top: 0;
@@ -505,15 +494,9 @@ button, a, input, select, textarea {
     align-items: center;
     gap: var(--spacing-3);
     padding: 0 var(--spacing-4);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.35s ease;
-}
-
-.detail-header-wrapper.scrolled .detail-header-compact {
-    opacity: 1;
-    pointer-events: auto;
-    box-shadow: var(--shadow-md);
+    opacity: 0; /* JS controls this */
+    pointer-events: none; /* JS controls this */
+    will-change: opacity;
 }
 
 .detail-emoji-compact {
