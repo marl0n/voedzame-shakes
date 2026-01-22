@@ -122,11 +122,59 @@ button, a, input, select, textarea {
     justify-content: space-between;
     align-items: center;
     box-shadow: var(--shadow-lg);
+    transition: all 0.25s ease;
+    will-change: transform, padding, opacity;
+}
+
+/* Collapsed header state */
+.header.collapsed {
+    padding: var(--spacing-4) var(--spacing-6);
+}
+
+.header.collapsed .header-content h1 {
+    font-size: var(--font-size-xl);
+}
+
+.header.collapsed .header-subtitle {
+    display: none;
+}
+
+.header.collapsed .update-btn {
+    width: 44px;
+    height: 44px;
+}
+
+.header.collapsed .update-btn .icon {
+    width: 22px;
+    height: 22px;
+}
+
+/* Current filter indicator in collapsed header */
+.header-filter-indicator {
+    display: none;
+    background: rgba(255, 255, 255, 0.25);
+    padding: var(--spacing-1) var(--spacing-3);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--white);
+    margin-left: var(--spacing-3);
+    white-space: nowrap;
+}
+
+.header.collapsed .header-filter-indicator.visible {
+    display: inline-block;
 }
 
 .header-content {
     display: flex;
     flex-direction: column;
+    transition: all 0.25s ease;
+}
+
+.header.collapsed .header-content {
+    flex-direction: row;
+    align-items: center;
 }
 
 .header h1 {
@@ -134,12 +182,14 @@ button, a, input, select, textarea {
     font-weight: 700;
     color: var(--white);
     line-height: 1.1;
+    transition: font-size 0.25s ease;
 }
 
 .header-subtitle {
     font-size: var(--font-size-lg);
     color: rgba(255, 255, 255, 0.9);
     margin-top: var(--spacing-1);
+    transition: opacity 0.2s ease;
 }
 
 /* Update Button */
@@ -1149,10 +1199,26 @@ button, a, input, select, textarea {
 .gradient-carrot-soup { background: linear-gradient(135deg, #FFE0B2 0%, #FFB74D 100%); }
 
 /* ===== FILTER PILLS ===== */
+.filter-pills-container {
+    position: sticky;
+    top: 120px; /* Below full header */
+    z-index: 99;
+    background: linear-gradient(to bottom, var(--warm-cream) 0%, var(--warm-cream) 85%, transparent 100%);
+    padding: var(--spacing-3) 0 var(--spacing-4);
+    margin: 0 calc(-1 * var(--spacing-6));
+    padding-left: var(--spacing-6);
+    padding-right: var(--spacing-6);
+    transition: top 0.25s ease;
+}
+
+/* When header is collapsed, adjust sticky position */
+.filter-pills-container.header-collapsed {
+    top: 56px; /* Below collapsed header */
+}
+
 .filter-pills {
     display: flex;
-    gap: var(--spacing-2);
-    margin-bottom: var(--spacing-5);
+    gap: var(--spacing-3);
     overflow-x: auto;
     padding: var(--spacing-1) 0;
     -webkit-overflow-scrolling: touch;
@@ -1175,6 +1241,9 @@ button, a, input, select, textarea {
     white-space: nowrap;
     transition: all 0.2s ease;
     min-height: 48px;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
 }
 
 .filter-pill:hover {
@@ -1182,10 +1251,18 @@ button, a, input, select, textarea {
     color: var(--sage-green);
 }
 
+.filter-pill:active {
+    transform: scale(0.96);
+}
+
 .filter-pill.active {
     background: linear-gradient(135deg, var(--sage-green) 0%, var(--sage-dark) 100%);
     border-color: var(--sage-green);
     color: var(--white);
+}
+
+.filter-pill-emoji {
+    font-size: 1.1em;
 }
 
 /* ===== STEPS LIST (SOUPS) ===== */
@@ -1198,62 +1275,77 @@ button, a, input, select, textarea {
 .step-item {
     display: flex;
     align-items: flex-start;
-    gap: var(--spacing-3);
+    gap: var(--spacing-4);
     padding: var(--spacing-4);
     background: var(--warm-cream);
     border-radius: var(--radius-xl);
     cursor: pointer;
     transition: all 0.2s ease;
+    min-height: 48px;
 }
 
 .step-item:hover {
     background: var(--soft-peach);
 }
 
-.step-item.checked {
+.step-item:active {
+    transform: scale(0.99);
+}
+
+.step-item.completed {
     opacity: 0.5;
 }
 
-.step-item.checked .step-text {
+.step-item.completed .step-text {
     text-decoration: line-through;
     color: var(--gray-500);
 }
 
-.step-checkbox {
-    width: 32px;
-    height: 32px;
-    min-width: 32px;
-    border: 3px solid var(--gray-100);
-    border-radius: var(--radius-xl);
-    background: var(--white);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    font-weight: 700;
-    color: transparent;
-    transition: all 0.2s ease;
-}
-
-.step-checkbox.checked {
-    background: var(--sage-green);
-    border-color: var(--sage-green);
-    color: var(--white);
-}
-
-.step-item .step-number {
-    width: 28px;
-    height: 28px;
-    min-width: 28px;
-    background: linear-gradient(135deg, var(--sage-green) 0%, var(--sage-dark) 100%);
+/* Simplified step number - circle that transforms */
+.step-number {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
     border-radius: var(--radius-full);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--white);
     font-weight: 700;
-    font-size: var(--font-size-sm);
-    margin-top: 2px;
+    font-size: var(--font-size-lg);
+    transition: all 0.2s ease;
+    position: relative;
+    flex-shrink: 0;
+}
+
+/* Default state: gray circle with number */
+.step-number:not(.completed) {
+    background: var(--gray-100);
+    border: 2px solid var(--gray-100);
+    color: var(--gray-600);
+}
+
+/* Completed state: green circle with checkmark */
+.step-number.completed {
+    background: linear-gradient(135deg, var(--sage-green) 0%, var(--sage-dark) 100%);
+    border: 2px solid var(--sage-green);
+    color: var(--white);
+}
+
+.step-number .step-num {
+    display: block;
+}
+
+.step-number.completed .step-num {
+    display: none;
+}
+
+.step-number .step-check {
+    display: none;
+    font-size: 20px;
+}
+
+.step-number.completed .step-check {
+    display: block;
 }
 
 .step-item .step-text {
@@ -1261,6 +1353,8 @@ button, a, input, select, textarea {
     font-size: var(--font-size-lg);
     color: var(--gray-700);
     line-height: 1.5;
+    padding-top: var(--spacing-2);
+    transition: all 0.2s ease;
 }
 
 /* Step quantity styling - muted color */
@@ -1280,6 +1374,7 @@ button, a, input, select, textarea {
     color: var(--gray-600);
     cursor: pointer;
     transition: all 0.2s ease;
+    min-height: 44px;
 }
 
 .reset-steps-btn:hover {

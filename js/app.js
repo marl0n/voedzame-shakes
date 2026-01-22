@@ -179,8 +179,50 @@ async function init() {
     renderFavorites();
     setupEventListeners();
     setupFilterPills();
+    setupCollapsingHeader();
     registerServiceWorker();
     updateBadges();
+}
+
+// ===== COLLAPSING HEADER =====
+let headerScrollHandler = null;
+
+function setupCollapsingHeader() {
+    const header = document.getElementById('main-header');
+    const filterContainer = document.getElementById('filter-pills-container');
+    
+    if (!header) return;
+    
+    // Remove existing handler if any
+    if (headerScrollHandler) {
+        window.removeEventListener('scroll', headerScrollHandler);
+    }
+    
+    const COLLAPSE_THRESHOLD = 80;
+    let isCollapsed = false;
+    
+    headerScrollHandler = () => {
+        const scrollY = window.scrollY;
+        const shouldCollapse = scrollY > COLLAPSE_THRESHOLD;
+        
+        if (shouldCollapse !== isCollapsed) {
+            isCollapsed = shouldCollapse;
+            
+            if (shouldCollapse) {
+                header.classList.add('collapsed');
+                if (filterContainer) {
+                    filterContainer.classList.add('header-collapsed');
+                }
+            } else {
+                header.classList.remove('collapsed');
+                if (filterContainer) {
+                    filterContainer.classList.remove('header-collapsed');
+                }
+            }
+        }
+    };
+    
+    window.addEventListener('scroll', headerScrollHandler, { passive: true });
 }
 
 // ===== LOAD RECIPES FROM JSON =====
@@ -296,8 +338,9 @@ function saveCheckedSteps(recipeId, checkedSteps) {
 function toggleStepCheck(recipeId, stepIndex) {
     const checkedSteps = getCheckedSteps(recipeId);
     const index = checkedSteps.indexOf(stepIndex);
+    const isNowCompleted = index === -1;
     
-    if (index === -1) {
+    if (isNowCompleted) {
         checkedSteps.push(stepIndex);
     } else {
         checkedSteps.splice(index, 1);
@@ -308,7 +351,12 @@ function toggleStepCheck(recipeId, stepIndex) {
     // Update the UI for the specific step
     const stepItem = document.querySelector(`.step-item[data-step="${stepIndex}"]`);
     if (stepItem) {
-        stepItem.classList.toggle('checked', checkedSteps.includes(stepIndex));
+        stepItem.classList.toggle('completed', isNowCompleted);
+        
+        const stepNumber = stepItem.querySelector('.step-number');
+        if (stepNumber) {
+            stepNumber.classList.toggle('completed', isNowCompleted);
+        }
     }
 }
 
@@ -334,12 +382,39 @@ function setupFilterPills() {
     const filterPills = document.querySelectorAll('.filter-pill');
     filterPills.forEach(pill => {
         pill.addEventListener('click', () => {
+            const wasActive = pill.classList.contains('active');
+            
+            // Remove active from all pills
             filterPills.forEach(p => p.classList.remove('active'));
-            pill.classList.add('active');
-            currentFilter = pill.dataset.filter;
+            
+            if (wasActive) {
+                // Tapping active pill deselects it - show all
+                currentFilter = 'all';
+                updateFilterIndicator(null);
+            } else {
+                // Tapping inactive pill activates it
+                pill.classList.add('active');
+                currentFilter = pill.dataset.filter;
+                updateFilterIndicator(pill.textContent.trim());
+            }
+            
             renderRecipes();
         });
     });
+}
+
+// Update the filter indicator in collapsed header
+function updateFilterIndicator(filterName) {
+    const indicator = document.getElementById('header-filter-indicator');
+    if (!indicator) return;
+    
+    if (filterName) {
+        indicator.textContent = filterName;
+        indicator.classList.add('visible');
+    } else {
+        indicator.textContent = '';
+        indicator.classList.remove('visible');
+    }
 }
 
 // ===== NAVIGATION =====
@@ -353,6 +428,23 @@ function switchTab(tab) {
     });
     header.style.display = '';
     tabBar.style.display = '';
+    
+    // Reset header collapsed state when switching tabs
+    const mainHeader = document.getElementById('main-header');
+    const filterContainer = document.getElementById('filter-pills-container');
+    
+    if (tab === 'recipes') {
+        // Re-enable collapsing header for recipes view
+        setupCollapsingHeader();
+        if (filterContainer) filterContainer.style.display = '';
+    } else {
+        // Disable collapsing header for other views
+        if (mainHeader) mainHeader.classList.remove('collapsed');
+        if (filterContainer) {
+            filterContainer.style.display = 'none';
+            filterContainer.classList.remove('header-collapsed');
+        }
+    }
 
     switch(tab) {
         case 'recipes':
@@ -481,21 +573,23 @@ function renderRecipeDetail(recipe) {
                 <div class="detail-section-header">
                     <h2 class="detail-section-title">Bereiding</h2>
                     <button class="reset-steps-btn" onclick="resetAllSteps(${recipe.id})">
-                        Reset stappen
+                        Reset
                     </button>
                 </div>
                 <div class="steps-list">
-                    ${recipe.steps.map((step, index) => `
-                        <div class="step-item ${checkedSteps.includes(index) ? 'checked' : ''}" 
+                    ${recipe.steps.map((step, index) => {
+                        const isCompleted = checkedSteps.includes(index);
+                        return `
+                        <div class="step-item ${isCompleted ? 'completed' : ''}" 
                              data-step="${index}"
                              onclick="toggleStepCheck(${recipe.id}, ${index})">
-                            <div class="step-checkbox ${checkedSteps.includes(index) ? 'checked' : ''}">
-                                ${checkedSteps.includes(index) ? '✓' : ''}
+                            <div class="step-number ${isCompleted ? 'completed' : ''}">
+                                <span class="step-num">${index + 1}</span>
+                                <span class="step-check">✓</span>
                             </div>
-                            <span class="step-number">${index + 1}</span>
                             <span class="step-text">${formatStepText(step)}</span>
                         </div>
-                    `).join('')}
+                    `;}).join('')}
                 </div>
             </div>
         `;
