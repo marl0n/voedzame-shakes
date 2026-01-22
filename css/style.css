@@ -438,9 +438,9 @@ button, a, input, select, textarea {
     max-width: none;
 }
 
-/* Compact sticky header */
+/* Compact fixed header */
 .detail-compact-header {
-    position: sticky;
+    position: fixed;
     top: 0;
     left: 0;
     right: 0;
@@ -492,6 +492,7 @@ button, a, input, select, textarea {
     background: var(--white);
     position: relative;
     padding: var(--spacing-6);
+    padding-top: calc(64px + var(--spacing-6)); /* Space for fixed header */
     padding-bottom: var(--spacing-8);
 }
 
@@ -502,10 +503,9 @@ button, a, input, select, textarea {
     top: 0;
     left: 0;
     right: 0;
-    height: 120px;
+    height: 180px;
     background: inherit;
     z-index: -1;
-    border-radius: 0 0 var(--radius-3xl) var(--radius-3xl);
 }
 
 .detail-title {
