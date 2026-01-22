@@ -179,51 +179,13 @@ async function init() {
     renderFavorites();
     setupEventListeners();
     setupFilterPills();
-    setupCollapsingHeader();
+    setupFavoritesFilterPills();
     registerServiceWorker();
     updateBadges();
 }
 
-// ===== COLLAPSING HEADER =====
-let headerScrollHandler = null;
-
-function setupCollapsingHeader() {
-    const header = document.getElementById('main-header');
-    const filterContainer = document.getElementById('filter-pills-container');
-    
-    if (!header) return;
-    
-    // Remove existing handler if any
-    if (headerScrollHandler) {
-        window.removeEventListener('scroll', headerScrollHandler);
-    }
-    
-    const COLLAPSE_THRESHOLD = 80;
-    let isCollapsed = false;
-    
-    headerScrollHandler = () => {
-        const scrollY = window.scrollY;
-        const shouldCollapse = scrollY > COLLAPSE_THRESHOLD;
-        
-        if (shouldCollapse !== isCollapsed) {
-            isCollapsed = shouldCollapse;
-            
-            if (shouldCollapse) {
-                header.classList.add('collapsed');
-                if (filterContainer) {
-                    filterContainer.classList.add('header-collapsed');
-                }
-            } else {
-                header.classList.remove('collapsed');
-                if (filterContainer) {
-                    filterContainer.classList.remove('header-collapsed');
-                }
-            }
-        }
-    };
-    
-    window.addEventListener('scroll', headerScrollHandler, { passive: true });
-}
+// State for favorites filter
+let favoritesFilter = 'all';
 
 // ===== LOAD RECIPES FROM JSON =====
 async function loadRecipes() {
@@ -379,23 +341,21 @@ function setupEventListeners() {
 
 // ===== FILTER PILLS =====
 function setupFilterPills() {
-    const filterPills = document.querySelectorAll('.filter-pill');
+    const filterPills = document.querySelectorAll('#filter-pills-container .filter-pill');
     filterPills.forEach(pill => {
         pill.addEventListener('click', () => {
             const wasActive = pill.classList.contains('active');
             
-            // Remove active from all pills
+            // Remove active from all pills in this container
             filterPills.forEach(p => p.classList.remove('active'));
             
             if (wasActive) {
                 // Tapping active pill deselects it - show all
                 currentFilter = 'all';
-                updateFilterIndicator(null);
             } else {
                 // Tapping inactive pill activates it
                 pill.classList.add('active');
                 currentFilter = pill.dataset.filter;
-                updateFilterIndicator(pill.textContent.trim());
             }
             
             renderRecipes();
@@ -403,18 +363,28 @@ function setupFilterPills() {
     });
 }
 
-// Update the filter indicator in collapsed header
-function updateFilterIndicator(filterName) {
-    const indicator = document.getElementById('header-filter-indicator');
-    if (!indicator) return;
-    
-    if (filterName) {
-        indicator.textContent = filterName;
-        indicator.classList.add('visible');
-    } else {
-        indicator.textContent = '';
-        indicator.classList.remove('visible');
-    }
+// ===== FAVORITES FILTER PILLS =====
+function setupFavoritesFilterPills() {
+    const filterPills = document.querySelectorAll('#favorites-filter-pills-container .filter-pill');
+    filterPills.forEach(pill => {
+        pill.addEventListener('click', () => {
+            const wasActive = pill.classList.contains('active');
+            
+            // Remove active from all pills in this container
+            filterPills.forEach(p => p.classList.remove('active'));
+            
+            if (wasActive) {
+                // Tapping active pill deselects it - show all
+                favoritesFilter = 'all';
+            } else {
+                // Tapping inactive pill activates it
+                pill.classList.add('active');
+                favoritesFilter = pill.dataset.filter;
+            }
+            
+            renderFavorites();
+        });
+    });
 }
 
 // ===== NAVIGATION =====
@@ -429,21 +399,15 @@ function switchTab(tab) {
     header.style.display = '';
     tabBar.style.display = '';
     
-    // Reset header collapsed state when switching tabs
-    const mainHeader = document.getElementById('main-header');
-    const filterContainer = document.getElementById('filter-pills-container');
+    // Show/hide filter pill containers based on active tab
+    const recipesFilterContainer = document.getElementById('filter-pills-container');
+    const favoritesFilterContainer = document.getElementById('favorites-filter-pills-container');
     
-    if (tab === 'recipes') {
-        // Re-enable collapsing header for recipes view
-        setupCollapsingHeader();
-        if (filterContainer) filterContainer.style.display = '';
-    } else {
-        // Disable collapsing header for other views
-        if (mainHeader) mainHeader.classList.remove('collapsed');
-        if (filterContainer) {
-            filterContainer.style.display = 'none';
-            filterContainer.classList.remove('header-collapsed');
-        }
+    if (recipesFilterContainer) {
+        recipesFilterContainer.style.display = tab === 'recipes' ? '' : 'none';
+    }
+    if (favoritesFilterContainer) {
+        favoritesFilterContainer.style.display = tab === 'favorites' ? '' : 'none';
     }
 
     switch(tab) {
@@ -495,13 +459,28 @@ function renderRecipes() {
 }
 
 function renderFavorites() {
-    const favoriteRecipes = recipes.filter(r => favorites.includes(r.id));
-    if (favoriteRecipes.length === 0) {
+    let favoriteRecipes = recipes.filter(r => favorites.includes(r.id));
+    
+    // Apply favorites filter if set
+    if (favoritesFilter !== 'all') {
+        favoriteRecipes = favoriteRecipes.filter(r => r.category === favoritesFilter);
+    }
+    
+    if (favoriteRecipes.length === 0 && favorites.length === 0) {
         favoritesList.innerHTML = `
             <div class="empty-message">
                 <div class="empty-icon">❤️</div>
                 <h3>Nog geen favorieten</h3>
                 <p>Tik op het hartje bij een recept om het hier op te slaan.</p>
+            </div>
+        `;
+    } else if (favoriteRecipes.length === 0) {
+        // Has favorites but none match filter
+        favoritesList.innerHTML = `
+            <div class="empty-message">
+                <div class="empty-icon">🔍</div>
+                <h3>Geen resultaten</h3>
+                <p>Geen favorieten gevonden in deze categorie.</p>
             </div>
         `;
     } else {
@@ -518,8 +497,7 @@ function createRecipeCard(recipe) {
             <div class="recipe-card-image ${recipe.gradient}">
                 <span class="recipe-card-emoji">${recipe.emoji}</span>
                 <button class="favorite-btn-card ${isFavorite ? 'active' : ''}" 
-                        data-id="${recipe.id}" 
-                        onclick="event.stopPropagation(); toggleFavorite(${recipe.id})"
+                        data-recipe-id="${recipe.id}"
                         aria-label="${isFavorite ? 'Verwijder uit favorieten' : 'Voeg toe aan favorieten'}">
                     ${isFavorite ? icons.heartFill : icons.heart}
                 </button>
@@ -543,8 +521,36 @@ function createRecipeCard(recipe) {
 
 function addCardListeners(container) {
     container.querySelectorAll('.recipe-card').forEach(card => {
-        card.addEventListener('click', () => {
+        // Card click - opens detail view
+        card.addEventListener('click', (e) => {
+            // Don't open detail if clicking favorite button
+            if (e.target.closest('.favorite-btn-card')) {
+                return;
+            }
             openRecipeDetail(parseInt(card.dataset.id));
+        });
+    });
+    
+    // Favorite button click - using event delegation with both click and touch
+    container.querySelectorAll('.favorite-btn-card').forEach(btn => {
+        // Use touchend for immediate response on mobile
+        btn.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const recipeId = parseInt(btn.dataset.recipeId);
+            if (recipeId) {
+                toggleFavorite(recipeId);
+            }
+        }, { passive: false });
+        
+        // Click for desktop
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const recipeId = parseInt(btn.dataset.recipeId);
+            if (recipeId) {
+                toggleFavorite(recipeId);
+            }
         });
     });
 }

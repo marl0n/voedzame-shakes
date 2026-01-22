@@ -114,88 +114,30 @@ button, a, input, select, textarea {
 /* ===== HEADER ===== */
 .header {
     background: linear-gradient(135deg, var(--sage-green) 0%, var(--sage-dark) 100%);
-    padding: var(--spacing-12) var(--spacing-6) var(--spacing-6);
-    position: sticky;
+    padding: var(--spacing-4) var(--spacing-6);
+    position: fixed;
     top: 0;
+    left: 0;
+    right: 0;
     z-index: 100;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: var(--shadow-lg);
-    transition: all 0.25s ease;
-    will-change: transform, padding, opacity;
-}
-
-/* Collapsed header state */
-.header.collapsed {
-    padding: var(--spacing-4) var(--spacing-6);
-}
-
-.header.collapsed .header-content h1 {
-    font-size: var(--font-size-xl);
-}
-
-.header.collapsed .header-subtitle {
-    display: none;
-}
-
-.header.collapsed .update-btn {
-    width: 44px;
-    height: 44px;
-}
-
-.header.collapsed .update-btn .icon {
-    width: 22px;
-    height: 22px;
-}
-
-/* Current filter indicator in collapsed header */
-.header-filter-indicator {
-    display: none;
-    background: rgba(255, 255, 255, 0.25);
-    padding: var(--spacing-1) var(--spacing-3);
-    border-radius: var(--radius-full);
-    font-size: var(--font-size-sm);
-    font-weight: 600;
-    color: var(--white);
-    margin-left: var(--spacing-3);
-    white-space: nowrap;
-}
-
-.header.collapsed .header-filter-indicator.visible {
-    display: inline-block;
-}
-
-.header-content {
-    display: flex;
-    flex-direction: column;
-    transition: all 0.25s ease;
-}
-
-.header.collapsed .header-content {
-    flex-direction: row;
-    align-items: center;
+    box-shadow: var(--shadow-md);
+    height: 60px;
 }
 
 .header h1 {
-    font-size: var(--font-size-4xl);
+    font-size: var(--font-size-2xl);
     font-weight: 700;
     color: var(--white);
     line-height: 1.1;
-    transition: font-size 0.25s ease;
-}
-
-.header-subtitle {
-    font-size: var(--font-size-lg);
-    color: rgba(255, 255, 255, 0.9);
-    margin-top: var(--spacing-1);
-    transition: opacity 0.2s ease;
 }
 
 /* Update Button */
 .update-btn {
-    width: 56px;
-    height: 56px;
+    width: 44px;
+    height: 44px;
     border-radius: var(--radius-full);
     background: rgba(255, 255, 255, 0.2);
     border: none;
@@ -204,19 +146,16 @@ button, a, input, select, textarea {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease;
     flex-shrink: 0;
 }
 
 .update-btn .icon {
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
 }
 
-.update-btn:hover,
 .update-btn:active {
     background: rgba(255, 255, 255, 0.3);
-    transform: scale(1.05);
 }
 
 .update-btn.spinning {
@@ -233,6 +172,7 @@ button, a, input, select, textarea {
     max-width: 448px;
     margin: 0 auto;
     padding: var(--spacing-6);
+    padding-top: calc(60px + var(--spacing-6)); /* Account for fixed header */
 }
 
 /* ===== VIEWS ===== */
@@ -242,12 +182,17 @@ button, a, input, select, textarea {
 
 .view.active {
     display: block;
-    animation: fadeIn 0.3s ease;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
+/* Views with filter pills need extra top padding */
+#recipes-view,
+#favorites-view {
+    padding-top: 56px; /* Height of filter pills container */
+}
+
+/* Shopping view doesn't have filter pills */
+#shopping-view {
+    padding-top: 0;
 }
 
 .view-title {
@@ -304,10 +249,10 @@ button, a, input, select, textarea {
 /* Favorite button on card */
 .favorite-btn-card {
     position: absolute;
-    top: var(--spacing-4);
-    right: var(--spacing-4);
-    width: 48px;
-    height: 48px;
+    top: var(--spacing-3);
+    right: var(--spacing-3);
+    width: 52px;
+    height: 52px;
     border-radius: var(--radius-full);
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(8px);
@@ -316,19 +261,20 @@ button, a, input, select, textarea {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease;
-    z-index: 5;
+    z-index: 10;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
 }
 
-.favorite-btn-card:hover {
-    transform: scale(1.1);
+.favorite-btn-card:active {
+    background: rgba(255, 255, 255, 1);
 }
 
 .favorite-btn-card .icon {
-    width: 24px;
-    height: 24px;
+    width: 26px;
+    height: 26px;
     color: var(--gray-500);
-    transition: color 0.2s;
+    pointer-events: none; /* Ensures clicks go to button, not icon */
 }
 
 .favorite-btn-card.active .icon {
@@ -863,32 +809,32 @@ button, a, input, select, textarea {
     text-align: center;
 }
 
-/* Add to shopping button */
+/* Add to shopping button - pill outline style */
 .add-shopping-btn {
     width: 100%;
-    height: 64px;
-    background: linear-gradient(135deg, var(--sage-green) 0%, var(--sage-dark) 100%);
-    color: var(--white);
-    border: none;
-    border-radius: var(--radius-2xl);
-    font-size: var(--font-size-xl);
-    font-weight: 700;
+    min-height: 48px;
+    padding: var(--spacing-3) var(--spacing-5);
+    background: var(--white);
+    color: var(--sage-green);
+    border: 2px solid var(--sage-green);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-lg);
+    font-weight: 600;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: var(--spacing-3);
-    box-shadow: var(--shadow-lg);
-    transition: all 0.2s;
+    gap: var(--spacing-2);
 }
 
 .add-shopping-btn:active {
-    transform: scale(0.98);
+    background: var(--sage-green);
+    color: var(--white);
 }
 
 .add-shopping-btn .icon {
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
 }
 
 .already-in-list {
@@ -1199,21 +1145,24 @@ button, a, input, select, textarea {
 .gradient-carrot-soup { background: linear-gradient(135deg, #FFE0B2 0%, #FFB74D 100%); }
 
 /* ===== FILTER PILLS ===== */
-.filter-pills-container {
-    position: sticky;
-    top: 120px; /* Below full header */
+.filter-pills-container,
+#favorites-filter-pills-container {
+    position: fixed;
+    top: 60px; /* Below fixed header */
+    left: 0;
+    right: 0;
     z-index: 99;
-    background: linear-gradient(to bottom, var(--warm-cream) 0%, var(--warm-cream) 85%, transparent 100%);
-    padding: var(--spacing-3) 0 var(--spacing-4);
-    margin: 0 calc(-1 * var(--spacing-6));
-    padding-left: var(--spacing-6);
-    padding-right: var(--spacing-6);
-    transition: top 0.25s ease;
+    background: var(--warm-cream);
+    padding: var(--spacing-3) var(--spacing-6);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
-/* When header is collapsed, adjust sticky position */
-.filter-pills-container.header-collapsed {
-    top: 56px; /* Below collapsed header */
+/* Centering container for pills */
+.filter-pills-container .filter-pills,
+#favorites-filter-pills-container .filter-pills {
+    max-width: 448px;
+    margin: 0 auto;
 }
 
 .filter-pills {

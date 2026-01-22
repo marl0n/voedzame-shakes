@@ -23,11 +23,7 @@
 <body>
     <!-- Header -->
     <header class="header" id="main-header">
-        <div class="header-content">
-            <h1>🥤 Voedzame Recepten</h1>
-            <span class="header-filter-indicator" id="header-filter-indicator"></span>
-            <span class="header-subtitle">Heerlijke voedzame recepten</span>
-        </div>
+        <h1>🍽️ Voedzame Recepten</h1>
         <button id="update-btn" class="update-btn" onclick="checkForUpdates()" aria-label="Check voor updates"></button>
     </header>
 
@@ -48,7 +44,12 @@
 
         <!-- Favorites View -->
         <section id="favorites-view" class="view">
-            <h2 class="view-title">Mijn Favorieten</h2>
+            <div class="filter-pills-container" id="favorites-filter-pills-container" style="display: none;">
+                <div class="filter-pills">
+                    <button class="filter-pill favorites-filter-pill" data-filter="shake"><span class="filter-pill-emoji">🥤</span> Shakes</button>
+                    <button class="filter-pill favorites-filter-pill" data-filter="soep"><span class="filter-pill-emoji">🥣</span> Soepen</button>
+                </div>
+            </div>
             <div id="favorites-list" class="recipe-list">
                 <!-- Favorites loaded via JS -->
             </div>
