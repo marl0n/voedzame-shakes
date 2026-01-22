@@ -263,9 +263,16 @@ function loadFromStorage() {
         const storedFavorites = localStorage.getItem('voedzame-favorites');
         const storedShoppingRecipes = localStorage.getItem('voedzame-shopping-recipes');
         const storedChecked = localStorage.getItem('voedzame-checked');
+        const storedFilter = localStorage.getItem('voedzame-filter');
+        const storedFavoritesFilter = localStorage.getItem('voedzame-favorites-filter');
+        
         if (storedFavorites) favorites = JSON.parse(storedFavorites);
         if (storedShoppingRecipes) shoppingRecipes = JSON.parse(storedShoppingRecipes);
         if (storedChecked) checkedIngredients = JSON.parse(storedChecked);
+        
+        // Load saved filter, default to 'shake' if none saved
+        currentFilter = storedFilter || 'shake';
+        favoritesFilter = storedFavoritesFilter || 'all';
     } catch (e) {
         console.error('Error loading from storage:', e);
     }
@@ -278,6 +285,15 @@ function saveToStorage() {
         localStorage.setItem('voedzame-checked', JSON.stringify(checkedIngredients));
     } catch (e) {
         console.error('Error saving to storage:', e);
+    }
+}
+
+function saveFilterToStorage() {
+    try {
+        localStorage.setItem('voedzame-filter', currentFilter);
+        localStorage.setItem('voedzame-favorites-filter', favoritesFilter);
+    } catch (e) {
+        console.error('Error saving filter to storage:', e);
     }
 }
 
@@ -344,6 +360,14 @@ function setupEventListeners() {
 // ===== FILTER PILLS =====
 function setupFilterPills() {
     const filterPills = document.querySelectorAll('#filter-pills-container .filter-pill');
+    
+    // Apply saved filter on load
+    filterPills.forEach(pill => {
+        if (pill.dataset.filter === currentFilter) {
+            pill.classList.add('active');
+        }
+    });
+    
     filterPills.forEach(pill => {
         pill.addEventListener('click', () => {
             const wasActive = pill.classList.contains('active');
@@ -360,6 +384,7 @@ function setupFilterPills() {
                 currentFilter = pill.dataset.filter;
             }
             
+            saveFilterToStorage();
             renderRecipes();
         });
     });
@@ -368,6 +393,14 @@ function setupFilterPills() {
 // ===== FAVORITES FILTER PILLS =====
 function setupFavoritesFilterPills() {
     const filterPills = document.querySelectorAll('#favorites-filter-pills-container .filter-pill');
+    
+    // Apply saved filter on load
+    filterPills.forEach(pill => {
+        if (pill.dataset.filter === favoritesFilter) {
+            pill.classList.add('active');
+        }
+    });
+    
     filterPills.forEach(pill => {
         pill.addEventListener('click', () => {
             const wasActive = pill.classList.contains('active');
@@ -384,6 +417,7 @@ function setupFavoritesFilterPills() {
                 favoritesFilter = pill.dataset.filter;
             }
             
+            saveFilterToStorage();
             renderFavorites();
         });
     });
