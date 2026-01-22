@@ -434,6 +434,7 @@ button, a, input, select, textarea {
     /* Break out of .main container to go full-width */
     margin-left: calc(-1 * var(--spacing-6));
     margin-right: calc(-1 * var(--spacing-6));
+    margin-top: calc(-1 * (60px + var(--spacing-6))); /* Compensate for .main padding-top */
     width: calc(100% + 2 * var(--spacing-6));
     max-width: none;
 }
@@ -508,20 +509,6 @@ button, a, input, select, textarea {
     z-index: -1;
 }
 
-.detail-title {
-    font-size: var(--font-size-4xl);
-    font-weight: 700;
-    color: var(--gray-900);
-    margin-bottom: var(--spacing-3);
-    line-height: 1.1;
-}
-
-.detail-description {
-    font-size: var(--font-size-xl);
-    color: var(--gray-600);
-    margin-bottom: var(--spacing-6);
-    line-height: 1.5;
-}
 
 /* Detail stats */
 .detail-stats {

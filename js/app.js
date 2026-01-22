@@ -651,8 +651,6 @@ function renderRecipeDetail(recipe) {
         </div>
 
         <div class="detail-content ${recipe.gradient}">
-            <h1 class="detail-title">${recipe.name}</h1>
-            
             <div class="detail-stats">
                 <div class="detail-stat protein">
                     <div class="detail-stat-icon">${icons.leaf}</div>
