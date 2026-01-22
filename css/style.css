@@ -431,6 +431,11 @@ button, a, input, select, textarea {
 #detail-view {
     padding: 0;
     padding-bottom: 100px;
+    /* Break out of .main container to go full-width */
+    margin-left: calc(-1 * var(--spacing-6));
+    margin-right: calc(-1 * var(--spacing-6));
+    width: calc(100% + 2 * var(--spacing-6));
+    max-width: none;
 }
 
 /* Mini header on scroll */
