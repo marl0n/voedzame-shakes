@@ -201,6 +201,8 @@ async function loadRecipes() {
             kcal: r.calories,
             protein: r.protein,
             category: r.category || "shake",
+            servings: r.servings || 2,
+            servingsUnit: r.servingsUnit || "porties",
             ingredients: r.ingredients.map(ing => ({
                 ingredient: ing.item.toLowerCase(),
                 display: ing.item,
@@ -571,6 +573,12 @@ function renderRecipeDetail(recipe) {
     const inShopping = shoppingRecipes.find(r => r.recipeId === recipe.id);
     const isSoup = recipe.category === 'soep';
     const checkedSteps = isSoup ? getCheckedSteps(recipe.id) : [];
+    
+    // Servings info
+    const servings = recipe.servings || 2;
+    const servingsUnit = recipe.servingsUnit || 'porties';
+    const increment = isSoup ? 2 : 1;
+    const minPortions = isSoup ? 2 : 1;
 
     let stepsSection = '';
     if (isSoup && recipe.steps) {
@@ -636,6 +644,8 @@ function renderRecipeDetail(recipe) {
                         ${isFavorite ? icons.heartFill : icons.heart}
                     </button>
                 </div>
+                
+                <p class="recipe-servings-info">Dit recept is voor ${servings} ${servingsUnit}</p>
 
                 <ul class="ingredients-list">
                     ${recipe.ingredients.map(ing => `
@@ -650,19 +660,25 @@ function renderRecipeDetail(recipe) {
 
             ${stepsSection}
 
-            <div class="portion-selector">
-                <label>Aantal porties:</label>
-                <div class="portion-controls">
-                    <button class="portion-btn" onclick="adjustPortionSelector(-1)">−</button>
-                    <span id="portion-count">1</span>
-                    <button class="portion-btn" onclick="adjustPortionSelector(1)">+</button>
+            <div class="add-shopping-section">
+                <button class="add-shopping-btn" data-id="${recipe.id}">
+                    ${icons.cart} Voeg toe aan boodschappenlijst
+                </button>
+                
+                <div class="portion-selector-inline" id="portion-selector-inline" style="display: none;">
+                    <p class="portion-question">Hoeveel ${servingsUnit} wil je maken?</p>
+                    <div class="portion-controls">
+                        <button class="portion-btn" onclick="adjustPortionSelector(-${increment}, ${minPortions})">−</button>
+                        <span id="portion-count">${servings}</span>
+                        <button class="portion-btn" onclick="adjustPortionSelector(${increment}, ${minPortions})">+</button>
+                    </div>
+                    <button class="confirm-add-btn" id="confirm-add-btn">
+                        Toevoegen
+                    </button>
                 </div>
+                
+                ${inShopping ? `<p class="already-in-list">Al op lijst: ${inShopping.portions} ${servingsUnit}</p>` : ''}
             </div>
-
-            <button class="add-shopping-btn" data-id="${recipe.id}">
-                ${icons.cart} Voeg toe aan boodschappenlijst
-            </button>
-            ${inShopping ? `<p class="already-in-list">Al op lijst: ${inShopping.portions}x</p>` : ''}
         </div>
     `;
 
@@ -672,7 +688,19 @@ function renderRecipeDetail(recipe) {
         renderRecipeDetail(recipe);
     });
 
-    detailView.querySelector('.add-shopping-btn').addEventListener('click', () => {
+    // Show portion selector when clicking add button
+    detailView.querySelector('.add-shopping-btn').addEventListener('click', (e) => {
+        const btn = e.currentTarget;
+        const selector = document.getElementById('portion-selector-inline');
+        
+        if (selector.style.display === 'none') {
+            selector.style.display = 'block';
+            btn.style.display = 'none';
+        }
+    });
+    
+    // Confirm add button
+    detailView.querySelector('#confirm-add-btn').addEventListener('click', () => {
         const portions = parseInt(document.getElementById('portion-count').textContent);
         addToShoppingList(recipe.id, portions);
     });
@@ -706,11 +734,11 @@ function setupDetailScroll() {
     window.addEventListener('scroll', detailScrollHandler);
 }
 
-function adjustPortionSelector(delta) {
+function adjustPortionSelector(delta, min = 1) {
     const countEl = document.getElementById('portion-count');
     let count = parseInt(countEl.textContent) + delta;
-    if (count < 1) count = 1;
-    if (count > 10) count = 10;
+    if (count < min) count = min;
+    if (count > 20) count = 20;
     countEl.textContent = count;
 }
 
@@ -727,12 +755,144 @@ function toggleFavorite(recipeId) {
     }
     saveToStorage();
     renderRecipes();
+    renderFavorites();
     updateBadges();
 }
 
 // ===== SMART SHOPPING LIST =====
 
-// Format amount for display
+// Parse amount string into value and unit
+function parseAmount(amountStr) {
+    // Handle special cases
+    if (!amountStr || amountStr === 'optioneel' || amountStr === 'naar smaak' || amountStr === 'snufje') {
+        return { value: null, unit: amountStr, raw: amountStr };
+    }
+    
+    // Match patterns like "400 ml", "2 eetlepels", "1 grote", "½ stuks"
+    const match = amountStr.match(/^([\d.,½¼¾]+)\s*(.*)$/);
+    if (!match) {
+        return { value: null, unit: amountStr, raw: amountStr };
+    }
+    
+    let value = match[1];
+    const unit = match[2].trim();
+    
+    // Convert fractions
+    if (value === '½') value = 0.5;
+    else if (value === '¼') value = 0.25;
+    else if (value === '¾') value = 0.75;
+    else value = parseFloat(value.replace(',', '.'));
+    
+    if (isNaN(value)) {
+        return { value: null, unit: amountStr, raw: amountStr };
+    }
+    
+    return { value, unit, raw: amountStr };
+}
+
+// Normalize unit for comparison
+function normalizeUnit(unit) {
+    const unitMap = {
+        'ml': 'ml',
+        'gram': 'gram',
+        'g': 'gram',
+        'eetlepel': 'eetlepels',
+        'eetlepels': 'eetlepels',
+        'el': 'eetlepels',
+        'theelepel': 'theelepels',
+        'theelepels': 'theelepels',
+        'tl': 'theelepels',
+        'stuks': 'stuks',
+        'stuk': 'stuks',
+        'grote': 'grote',
+        'kleine': 'kleine',
+        'teentjes': 'teentjes',
+        'teentje': 'teentjes',
+        'tenen': 'teentjes',
+        'handvol': 'handvol',
+        'cm': 'cm',
+        'scheutje': 'scheutjes',
+        'scheutjes': 'scheutjes'
+    };
+    return unitMap[unit.toLowerCase()] || unit;
+}
+
+// Combine amounts intelligently
+function combineAmounts(amounts) {
+    // Parse all amounts
+    const parsed = amounts.map(parseAmount);
+    
+    // Group by normalized unit
+    const byUnit = {};
+    const nonNumeric = [];
+    
+    parsed.forEach(p => {
+        if (p.value === null) {
+            nonNumeric.push(p.raw);
+        } else {
+            const normUnit = normalizeUnit(p.unit);
+            if (!byUnit[normUnit]) {
+                byUnit[normUnit] = { total: 0, unit: p.unit };
+            }
+            byUnit[normUnit].total += p.value;
+        }
+    });
+    
+    // Format results
+    const results = [];
+    
+    Object.entries(byUnit).forEach(([normUnit, data]) => {
+        let { total, unit } = data;
+        
+        // Smart conversions
+        if (normUnit === 'ml' && total >= 1000) {
+            total = total / 1000;
+            unit = 'liter';
+        } else if (normUnit === 'gram' && total >= 1000) {
+            total = total / 1000;
+            unit = 'kg';
+        }
+        
+        // Format number nicely
+        let numStr;
+        if (total === Math.floor(total)) {
+            numStr = total.toString();
+        } else {
+            numStr = total.toFixed(1).replace('.0', '').replace('.', ',');
+        }
+        
+        // Handle singular/plural for Dutch
+        if (total === 1) {
+            // Singular
+            if (unit === 'eetlepels') unit = 'eetlepel';
+            else if (unit === 'theelepels') unit = 'theelepel';
+            else if (unit === 'teentjes') unit = 'teentje';
+            else if (unit === 'stuks') unit = 'stuk';
+            else if (unit === 'scheutjes') unit = 'scheutje';
+            else if (unit === 'grote') unit = 'grote';
+            else if (unit === 'kleine') unit = 'kleine';
+        } else {
+            // Plural
+            if (unit === 'eetlepel') unit = 'eetlepels';
+            else if (unit === 'theelepel') unit = 'theelepels';
+            else if (unit === 'teentje') unit = 'teentjes';
+            else if (unit === 'teen') unit = 'teentjes';
+            else if (unit === 'stuk') unit = 'stuks';
+            else if (unit === 'scheutje') unit = 'scheutjes';
+            else if (unit === 'handvol') unit = 'handvol';
+        }
+        
+        results.push(`${numStr} ${unit}`);
+    });
+    
+    // Add non-numeric amounts (deduplicated)
+    const uniqueNonNumeric = [...new Set(nonNumeric)];
+    results.push(...uniqueNonNumeric);
+    
+    return results.join(' + ') || amounts[0];
+}
+
+// Format amount for display (legacy, kept for compatibility)
 function formatAmount(ingredient) {
     return ingredient.amount;
 }
@@ -804,29 +964,42 @@ function groupIngredientsByAisle(combined) {
     return grouped;
 }
 
-function addToShoppingList(recipeId, portions = 1) {
+function addToShoppingList(recipeId, portions = 2) {
     const existing = shoppingRecipes.find(r => r.recipeId === recipeId);
     const recipe = recipes.find(r => r.id === recipeId);
+    const unit = recipe.servingsUnit || 'porties';
 
     if (existing) {
         existing.portions += portions;
-        showToast(`${recipe.name} nu ${existing.portions}x op lijst`);
+        showToast(`${recipe.name} nu ${existing.portions} ${unit} op lijst`);
     } else {
         shoppingRecipes.push({ recipeId, portions });
-        showToast(`${portions}x ${recipe.name} toegevoegd`);
+        showToast(`${portions} ${unit} ${recipe.name} toegevoegd`);
     }
 
     saveToStorage();
+    updateBadges();
     renderRecipeDetail(recipe);
+}
+
+function getRecipeIncrement(recipe) {
+    return recipe.category === 'soep' ? 2 : 1;
+}
+
+function getRecipeMinPortions(recipe) {
+    return recipe.category === 'soep' ? 2 : 1;
 }
 
 function adjustRecipePortions(recipeId, delta) {
     const existing = shoppingRecipes.find(r => r.recipeId === recipeId);
     if (!existing) return;
+    
+    const recipe = recipes.find(r => r.id === recipeId);
+    const minPortions = recipe ? getRecipeMinPortions(recipe) : 1;
 
     existing.portions += delta;
 
-    if (existing.portions <= 0) {
+    if (existing.portions < minPortions) {
         removeRecipeFromShopping(recipeId);
     } else {
         saveToStorage();
@@ -889,14 +1062,8 @@ function renderShoppingList() {
         grouped[aisle].forEach(ing => {
             const isChecked = checkedIngredients.includes(ing.key);
 
-            // Format amounts - combine same amounts
-            const amountCounts = {};
-            ing.amounts.forEach(amt => {
-                amountCounts[amt] = (amountCounts[amt] || 0) + 1;
-            });
-            const amountStr = Object.entries(amountCounts).map(([amt, count]) => {
-                return count > 1 ? `${count}x ${amt}` : amt;
-            }).join(' + ');
+            // Combine amounts intelligently
+            const amountStr = combineAmounts(ing.amounts);
 
             ingredientsHTML += `
                 <div class="shopping-item ${isChecked ? 'checked' : ''}" data-ingredient="${ing.key}">
@@ -913,6 +1080,11 @@ function renderShoppingList() {
     let recipesHTML = shoppingRecipes.map(sr => {
         const recipe = recipes.find(r => r.id === sr.recipeId);
         if (!recipe) return '';
+        
+        const increment = getRecipeIncrement(recipe);
+        const minPortions = getRecipeMinPortions(recipe);
+        const unit = recipe.servingsUnit || 'porties';
+        const isAtMinimum = sr.portions <= minPortions;
 
         return `
             <div class="shopping-recipe">
@@ -921,12 +1093,12 @@ function renderShoppingList() {
                     <span class="shopping-recipe-name">${recipe.name}</span>
                 </span>
                 <div class="shopping-recipe-controls">
-                    ${sr.portions === 1
+                    ${isAtMinimum
                         ? `<button class="portion-btn delete" onclick="removeRecipeFromShopping(${recipe.id})">✕</button>`
-                        : `<button class="portion-btn" onclick="adjustRecipePortions(${recipe.id}, -1)">−</button>`
+                        : `<button class="portion-btn" onclick="adjustRecipePortions(${recipe.id}, -${increment})">−</button>`
                     }
                     <span class="portion-count">${sr.portions}</span>
-                    <button class="portion-btn" onclick="adjustRecipePortions(${recipe.id}, 1)">+</button>
+                    <button class="portion-btn" onclick="adjustRecipePortions(${recipe.id}, ${increment})">+</button>
                 </div>
             </div>
         `;
@@ -959,13 +1131,8 @@ function copyShoppingList() {
         grouped[aisle].forEach(ing => {
             if (checkedIngredients.includes(ing.key)) return;
 
-            const amountCounts = {};
-            ing.amounts.forEach(amt => {
-                amountCounts[amt] = (amountCounts[amt] || 0) + 1;
-            });
-            const amountStr = Object.entries(amountCounts).map(([amt, count]) => {
-                return count > 1 ? `${count}x ${amt}` : amt;
-            }).join(' + ');
+            // Combine amounts intelligently
+            const amountStr = combineAmounts(ing.amounts);
 
             lines.push(`• ${ing.display} - ${amountStr}`);
         });
