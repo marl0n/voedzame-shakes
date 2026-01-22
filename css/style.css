@@ -187,7 +187,7 @@ button, a, input, select, textarea {
 /* Views with filter pills need extra top padding */
 #recipes-view,
 #favorites-view {
-    padding-top: 56px; /* Height of filter pills container */
+    padding-top: 72px; /* Height of filter pills container: 12+48+12+1 = 73px */
 }
 
 /* Shopping view doesn't have filter pills */
@@ -1210,6 +1210,10 @@ button, a, input, select, textarea {
 .gradient-broccoli-soup { background: linear-gradient(135deg, #C8E6C9 0%, #66BB6A 100%); }
 .gradient-courgette-soup { background: linear-gradient(135deg, #DCEDC8 0%, #AED581 100%); }
 .gradient-carrot-soup { background: linear-gradient(135deg, #FFE0B2 0%, #FFB74D 100%); }
+.gradient-chicken-soup { background: linear-gradient(135deg, #FDE68A 0%, #F59E0B 100%); }
+.gradient-mushroom-soup { background: linear-gradient(135deg, #D4C4A8 0%, #8B7355 100%); }
+.gradient-spinach-soup { background: linear-gradient(135deg, #86EFAC 0%, #22C55E 100%); }
+.gradient-cauliflower-soup { background: linear-gradient(135deg, #FEF3C7 0%, #FCD34D 100%); }
 
 /* ===== FILTER PILLS ===== */
 .filter-pills-container,
