@@ -644,18 +644,13 @@ function renderRecipeDetail(recipe) {
     }
 
     detailView.innerHTML = `
-        <div class="detail-mini-header">
-            <button class="back-btn-mini" onclick="closeDetail()">${icons.chevronLeft}</button>
-            <span class="mini-header-emoji">${recipe.emoji}</span>
-            <span class="mini-header-title">${recipe.name}</span>
+        <div class="detail-compact-header">
+            <button class="back-btn-compact" onclick="closeDetail()">${icons.chevronLeft}</button>
+            <span class="detail-compact-emoji">${recipe.emoji}</span>
+            <span class="detail-compact-title">${recipe.name}</span>
         </div>
 
-        <div class="detail-header ${recipe.gradient}">
-            <button class="back-btn" onclick="closeDetail()">${icons.chevronLeft}</button>
-            <span class="detail-emoji">${recipe.emoji}</span>
-        </div>
-
-        <div class="detail-content">
+        <div class="detail-content ${recipe.gradient}">
             <h1 class="detail-title">${recipe.name}</h1>
             
             <div class="detail-stats">
@@ -739,34 +734,7 @@ function renderRecipeDetail(recipe) {
         addToShoppingList(recipe.id, portions);
     });
 
-    setupDetailScroll();
-}
-
-let detailScrollHandler = null;
-
-function setupDetailScroll() {
-    if (detailScrollHandler) {
-        window.removeEventListener('scroll', detailScrollHandler);
     }
-
-    const miniHeader = document.querySelector('.detail-mini-header');
-    const mainHeader = document.querySelector('.detail-header');
-
-    if (!miniHeader || !mainHeader) return;
-
-    detailScrollHandler = () => {
-        const scrollY = window.scrollY;
-        const threshold = 200;
-
-        if (scrollY > threshold) {
-            miniHeader.classList.add('visible');
-        } else {
-            miniHeader.classList.remove('visible');
-        }
-    };
-
-    window.addEventListener('scroll', detailScrollHandler);
-}
 
 function adjustPortionSelector(delta, min = 1) {
     const countEl = document.getElementById('portion-count');
