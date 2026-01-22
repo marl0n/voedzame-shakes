@@ -644,10 +644,17 @@ function renderRecipeDetail(recipe) {
     }
 
     detailView.innerHTML = `
-        <div class="detail-header ${recipe.gradient}">
-            <button class="detail-header-back" onclick="closeDetail()">${icons.chevronLeft}</button>
-            <span class="detail-header-emoji">${recipe.emoji}</span>
-            <h1 class="detail-header-title">${recipe.name}</h1>
+        <div class="detail-header-wrapper">
+            <div class="detail-header-large ${recipe.gradient}">
+                <button class="detail-back-btn" onclick="closeDetail()">${icons.chevronLeft}</button>
+                <span class="detail-emoji-large">${recipe.emoji}</span>
+                <h1 class="detail-title-large">${recipe.name}</h1>
+            </div>
+            <div class="detail-header-compact ${recipe.gradient}">
+                <button class="detail-back-btn" onclick="closeDetail()">${icons.chevronLeft}</button>
+                <span class="detail-emoji-compact">${recipe.emoji}</span>
+                <span class="detail-title-compact">${recipe.name}</span>
+            </div>
         </div>
 
         <div class="detail-content ${recipe.gradient}-light">
@@ -743,17 +750,17 @@ function setupDetailScroll() {
         window.removeEventListener('scroll', detailScrollHandler);
     }
 
-    const header = document.querySelector('.detail-header');
-    if (!header) return;
+    const wrapper = document.querySelector('.detail-header-wrapper');
+    if (!wrapper) return;
 
     detailScrollHandler = () => {
         const scrollY = window.scrollY;
-        const threshold = 60; // Start morphing after 60px scroll
+        const threshold = 80; // Crossfade after 80px scroll
 
         if (scrollY > threshold) {
-            header.classList.add('scrolled');
+            wrapper.classList.add('scrolled');
         } else {
-            header.classList.remove('scrolled');
+            wrapper.classList.remove('scrolled');
         }
     };
 
