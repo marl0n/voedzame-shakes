@@ -1252,6 +1252,9 @@ async function checkForUpdates() {
             console.log('Caches geleegd:', cacheNames);
         }
         
+        // 3. Reset soup warning so it shows again after reload
+        localStorage.removeItem('voedzame-soup-warning-dismissed');
+        
         showToast('App wordt bijgewerkt...');
         
         // 3. Hard reload after short delay
