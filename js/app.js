@@ -30,6 +30,7 @@ const icons = {
 // Aisle icons mapping
 const aisleIcons = {
     "Fruit": icons.leaf,
+    "Vlees": icons.sunrise,
     "Zuivel": icons.drop,
     "Ontbijt": icons.sunrise,
     "Noten": icons.grid,
@@ -43,7 +44,7 @@ const aisleIcons = {
 
 // ===== INGREDIENT DATABASE =====
 // Gangpad volgorde zoals in supermarkt
-const aisleOrder = ["Groenten", "Fruit", "Zuivel", "Ontbijt", "Noten", "Zoet", "Bakken", "Diepvries", "Speciaal"];
+const aisleOrder = ["Groenten", "Fruit", "Vlees", "Zuivel", "Ontbijt", "Noten", "Zoet", "Bakken", "Diepvries", "Speciaal"];
 
 const ingredientDB = {
     // Fruit
@@ -67,16 +68,20 @@ const ingredientDB = {
     "wortels": { aisle: "Groenten", order: 8 },
     "verse gember": { aisle: "Groenten", order: 9 },
 
+    // Vlees
+    "kipfilet": { aisle: "Vlees", order: 1 },
+
     // Zuivel
-    "volle melk": { aisle: "Zuivel", order: 1 },
-    "griekse yoghurt": { aisle: "Zuivel", order: 2 },
-    "kwark": { aisle: "Zuivel", order: 3 },
-    "kokosmelk": { aisle: "Zuivel", order: 4 },
-    "amandelmelk": { aisle: "Zuivel", order: 5 },
-    "slagroom": { aisle: "Zuivel", order: 6 },
-    "crème fraîche": { aisle: "Zuivel", order: 7 },
-    "boter": { aisle: "Zuivel", order: 8 },
-    "oude kaas, geraspt": { aisle: "Zuivel", order: 9 },
+    "eieren": { aisle: "Zuivel", order: 1 },
+    "volle melk": { aisle: "Zuivel", order: 2 },
+    "griekse yoghurt": { aisle: "Zuivel", order: 3 },
+    "kwark": { aisle: "Zuivel", order: 4 },
+    "kokosmelk": { aisle: "Zuivel", order: 5 },
+    "amandelmelk": { aisle: "Zuivel", order: 6 },
+    "slagroom": { aisle: "Zuivel", order: 7 },
+    "crème fraîche": { aisle: "Zuivel", order: 8 },
+    "boter": { aisle: "Zuivel", order: 9 },
+    "oude kaas, geraspt": { aisle: "Zuivel", order: 10 },
 
     // Ontbijt
     "havermout": { aisle: "Ontbijt", order: 1 },
