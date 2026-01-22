@@ -468,7 +468,7 @@ function renderRecipes() {
     if (currentFilter === 'soep' && !isSoupWarningDismissed()) {
         html += `
             <div class="safety-warning-banner" id="soup-warning-banner">
-                <p class="warning-text">⚠️ Laat soep ~10 minuten afkoelen tot het niet meer stoomt. Gebruik <strong>alleen</strong> de grote kan (niet boven MAX-streep). Nooit hete vloeistoffen in de bekers!</p>
+                <p class="warning-text">⚠️ <strong>NutriBullet:</strong> Laat soep ~10 minuten afkoelen tot het niet meer stoomt. Gebruik alleen de grote kan (niet boven MAX-streep). Nooit hete vloeistoffen in de bekers!</p>
                 <button class="safety-warning-dismiss" onclick="dismissSoupWarning()" aria-label="Sluiten">✕</button>
             </div>
         `;
