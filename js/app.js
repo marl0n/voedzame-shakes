@@ -644,19 +644,13 @@ function renderRecipeDetail(recipe) {
     }
 
     detailView.innerHTML = `
-        <div class="detail-hero ${recipe.gradient}">
-            <button class="back-btn-hero" onclick="closeDetail()">${icons.chevronLeft}</button>
-            <span class="detail-hero-emoji">${recipe.emoji}</span>
-            <h1 class="detail-hero-title">${recipe.name}</h1>
+        <div class="detail-header ${recipe.gradient}">
+            <button class="detail-header-back" onclick="closeDetail()">${icons.chevronLeft}</button>
+            <span class="detail-header-emoji">${recipe.emoji}</span>
+            <h1 class="detail-header-title">${recipe.name}</h1>
         </div>
 
-        <div class="detail-compact-header">
-            <button class="back-btn-compact" onclick="closeDetail()">${icons.chevronLeft}</button>
-            <span class="detail-compact-emoji">${recipe.emoji}</span>
-            <span class="detail-compact-title">${recipe.name}</span>
-        </div>
-
-        <div class="detail-content">
+        <div class="detail-content ${recipe.gradient}-light">
             <div class="detail-stats">
                 <div class="detail-stat protein">
                     <div class="detail-stat-icon">${icons.leaf}</div>
@@ -749,19 +743,17 @@ function setupDetailScroll() {
         window.removeEventListener('scroll', detailScrollHandler);
     }
 
-    const compactHeader = document.querySelector('.detail-compact-header');
-    const heroHeader = document.querySelector('.detail-hero');
-
-    if (!compactHeader || !heroHeader) return;
+    const header = document.querySelector('.detail-header');
+    if (!header) return;
 
     detailScrollHandler = () => {
         const scrollY = window.scrollY;
-        const threshold = 100; // Show compact header after scrolling 100px
+        const threshold = 60; // Start morphing after 60px scroll
 
         if (scrollY > threshold) {
-            compactHeader.classList.add('visible');
+            header.classList.add('scrolled');
         } else {
-            compactHeader.classList.remove('visible');
+            header.classList.remove('scrolled');
         }
     };
 

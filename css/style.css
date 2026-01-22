@@ -439,29 +439,29 @@ button, a, input, select, textarea {
     max-width: none;
 }
 
-/* Hero header - large, with gradient */
-.detail-hero {
-    position: relative;
-    height: 180px;
+/* Morphing header - starts large, shrinks on scroll */
+.detail-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    height: 160px;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    padding: var(--spacing-5);
-    background: linear-gradient(135deg, var(--soft-peach) 0%, var(--warm-cream) 100%);
+    padding: var(--spacing-4);
+    transition: height 0.25s ease, padding 0.25s ease, box-shadow 0.25s ease;
 }
 
-.detail-hero::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 40px;
-    background: linear-gradient(to bottom, transparent, var(--white));
-    pointer-events: none;
+.detail-header.scrolled {
+    height: 64px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: var(--spacing-3);
+    box-shadow: var(--shadow-md);
 }
 
-.back-btn-hero {
+.detail-header-back {
     position: absolute;
     top: var(--spacing-4);
     left: var(--spacing-4);
@@ -476,90 +476,85 @@ button, a, input, select, textarea {
     justify-content: center;
     color: var(--gray-700);
     box-shadow: var(--shadow-sm);
+    transition: all 0.25s ease;
+    flex-shrink: 0;
 }
 
-.back-btn-hero:active {
+.detail-header.scrolled .detail-header-back {
+    position: relative;
+    top: 0;
+    left: 0;
+    background: rgba(255, 255, 255, 0.3);
+    box-shadow: none;
+}
+
+.detail-header-back:active {
     transform: scale(0.95);
 }
 
-.detail-hero-emoji {
+.detail-header-emoji {
     position: absolute;
     top: var(--spacing-4);
     right: var(--spacing-4);
-    font-size: 56px;
+    font-size: 52px;
+    transition: all 0.25s ease;
 }
 
-.detail-hero-title {
+.detail-header.scrolled .detail-header-emoji {
+    position: relative;
+    top: 0;
+    right: 0;
+    font-size: 28px;
+}
+
+.detail-header-title {
     font-size: var(--font-size-3xl);
     font-weight: 700;
     color: var(--gray-900);
     line-height: 1.2;
     margin: 0;
-    padding-right: 80px; /* Space for emoji */
-    z-index: 1;
+    padding-right: 70px; /* Space for emoji */
+    transition: all 0.25s ease;
 }
 
-/* Compact header - appears on scroll */
-.detail-compact-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 64px;
-    background: var(--white);
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-3);
-    padding: 0 var(--spacing-4);
-    box-shadow: var(--shadow-md);
-    z-index: 1000;
-    transform: translateY(-100%);
-    transition: transform 0.2s ease;
-}
-
-.detail-compact-header.visible {
-    transform: translateY(0);
-}
-
-.back-btn-compact {
-    width: 44px;
-    height: 44px;
-    border-radius: var(--radius-full);
-    background: var(--gray-100);
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--gray-700);
-    flex-shrink: 0;
-}
-
-.back-btn-compact:active {
-    transform: scale(0.95);
-}
-
-.detail-compact-emoji {
-    font-size: 28px;
-    flex-shrink: 0;
-}
-
-.detail-compact-title {
+.detail-header.scrolled .detail-header-title {
     font-size: var(--font-size-lg);
-    font-weight: 600;
-    color: var(--gray-900);
+    padding-right: 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    flex: 1;
 }
 
-/* Detail content - white background */
+/* Detail content - light tinted background */
 .detail-content {
-    background: var(--white);
     position: relative;
     padding: var(--spacing-5);
     padding-bottom: var(--spacing-6);
+    min-height: 100vh;
 }
+
+/* Light background variants for content */
+.gradient-banana-light { background: linear-gradient(180deg, #FFFDF5 0%, var(--white) 100%); }
+.gradient-chocolate-light { background: linear-gradient(180deg, #FAF8F7 0%, var(--white) 100%); }
+.gradient-berry-light { background: linear-gradient(180deg, #FFF8FA 0%, var(--white) 100%); }
+.gradient-mango-light { background: linear-gradient(180deg, #FFFCF5 0%, var(--white) 100%); }
+.gradient-apple-light { background: linear-gradient(180deg, #FFF8F8 0%, var(--white) 100%); }
+.gradient-vanilla-light { background: linear-gradient(180deg, #FFFDF5 0%, var(--white) 100%); }
+.gradient-strawberry-light { background: linear-gradient(180deg, #FFF8FA 0%, var(--white) 100%); }
+.gradient-pear-light { background: linear-gradient(180deg, #F8FDF8 0%, var(--white) 100%); }
+.gradient-green-keto-light { background: linear-gradient(180deg, #F8FDF8 0%, var(--white) 100%); }
+.gradient-creamy-cacao-light { background: linear-gradient(180deg, #F5F3F2 0%, var(--white) 100%); }
+
+/* Soup gradient lights */
+.gradient-tomato-soup-light { background: linear-gradient(180deg, #FFF8F5 0%, var(--white) 100%); }
+.gradient-broccoli-soup-light { background: linear-gradient(180deg, #F5FDF5 0%, var(--white) 100%); }
+.gradient-courgette-soup-light { background: linear-gradient(180deg, #F8FDF5 0%, var(--white) 100%); }
+.gradient-carrot-soup-light { background: linear-gradient(180deg, #FFFAF5 0%, var(--white) 100%); }
+.gradient-chicken-soup-light { background: linear-gradient(180deg, #FFFDF5 0%, var(--white) 100%); }
+.gradient-mushroom-soup-light { background: linear-gradient(180deg, #FAF8F5 0%, var(--white) 100%); }
+.gradient-spinach-soup-light { background: linear-gradient(180deg, #F5FDF8 0%, var(--white) 100%); }
+.gradient-cauliflower-soup-light { background: linear-gradient(180deg, #FFFDF8 0%, var(--white) 100%); }
 
 
 /* Detail stats */
