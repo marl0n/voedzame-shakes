@@ -76,7 +76,18 @@ const ingredientDB = {
     "kaneel": { aisle: "Bakken", order: 3 },
 
     // Diepvries
-    "rode vruchten": { aisle: "Diepvries", order: 1 }
+    "rode vruchten": { aisle: "Diepvries", order: 1 },
+
+    // Groenten (keto shakes)
+    "spinazie": { aisle: "Fruit", order: 7 },
+    "komkommer": { aisle: "Fruit", order: 8 },
+    "citroensap": { aisle: "Fruit", order: 9 },
+
+    // Zuivel (keto)
+    "slagroom": { aisle: "Zuivel", order: 6 },
+    "water": { aisle: "Speciaal", order: 1 },
+    "zout": { aisle: "Speciaal", order: 2 },
+    "stevia of zout": { aisle: "Speciaal", order: 3 }
 };
 
 // ===== RECIPES DATA =====
@@ -205,6 +216,38 @@ const recipes = [
             { ingredient: "kwark", amount: 100, unit: "g" },
             { ingredient: "honing", amount: 1, unit: "el" },
             { ingredient: "amandelmelk", amount: 50, unit: "ml" }
+        ]
+    },
+    {
+        id: 9,
+        name: "Groene Keto Shake",
+        emoji: "🥬",
+        gradient: "gradient-green-keto",
+        kcal: 515,
+        protein: 5,
+        ingredients: [
+            { ingredient: "spinazie", amount: 1, unit: "handvol" },
+            { ingredient: "avocado", amount: 0.5, unit: "stuk" },
+            { ingredient: "komkommer", amount: 0.25, unit: "stuk" },
+            { ingredient: "citroensap", amount: 1, unit: "scheutje" },
+            { ingredient: "slagroom", amount: 100, unit: "ml" },
+            { ingredient: "water", amount: 100, unit: "ml" },
+            { ingredient: "zout", amount: 1, unit: "snufje" }
+        ]
+    },
+    {
+        id: 10,
+        name: "Creamy Cacao Shake",
+        emoji: "🍫",
+        gradient: "gradient-creamy-cacao",
+        kcal: 510,
+        protein: 5,
+        ingredients: [
+            { ingredient: "avocado", amount: 0.5, unit: "stuk" },
+            { ingredient: "cacaopoeder", amount: 1, unit: "el" },
+            { ingredient: "slagroom", amount: 100, unit: "ml" },
+            { ingredient: "water", amount: 100, unit: "ml" },
+            { ingredient: "stevia of zout", display: "Stevia of zout", amount: 1, unit: "optioneel" }
         ]
     }
 ];

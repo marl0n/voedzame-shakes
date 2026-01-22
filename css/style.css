@@ -1139,6 +1139,8 @@ button, a, input, select, textarea {
 .gradient-vanilla { background: linear-gradient(135deg, #FFF8E1 0%, #FFE082 100%); }
 .gradient-strawberry { background: linear-gradient(135deg, #FCE4EC 0%, #F48FB1 100%); }
 .gradient-pear { background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%); }
+.gradient-green-keto { background: linear-gradient(135deg, #E8F5E9 0%, #A5D6A7 100%); }
+.gradient-creamy-cacao { background: linear-gradient(135deg, #4E342E 0%, #795548 100%); }
 
 /* ===== RESPONSIVE ===== */
 @media (min-width: 600px) {

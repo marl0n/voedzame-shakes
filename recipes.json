@@ -141,6 +141,42 @@
         { "item": "Amandelmelk", "amount": "50 ml" }
       ],
       "instructions": "Schil de peer en verwijder het klokhuis. Snijd in stukjes en blend met alle andere ingrediënten tot een gladde shake."
+    },
+    {
+      "id": 9,
+      "name": "Groene Keto Shake",
+      "description": "Frisse keto shake met spinazie en avocado",
+      "calories": 515,
+      "protein": 5,
+      "prepTime": 5,
+      "image": "green-keto",
+      "ingredients": [
+        { "item": "Spinazie", "amount": "1 handvol" },
+        { "item": "Avocado", "amount": "½ stuks" },
+        { "item": "Komkommer", "amount": "¼ stuks" },
+        { "item": "Citroensap", "amount": "1 scheutje" },
+        { "item": "Slagroom", "amount": "100 ml" },
+        { "item": "Water", "amount": "100 ml" },
+        { "item": "Zout", "amount": "snufje" }
+      ],
+      "instructions": "Doe alle ingrediënten in de NutriBullet. Blend tot een gladde, groene shake. Voeg meer water toe voor een dunnere textuur."
+    },
+    {
+      "id": 10,
+      "name": "Creamy Cacao Shake",
+      "description": "Romige keto chocoladeshake als dessert",
+      "calories": 510,
+      "protein": 5,
+      "prepTime": 5,
+      "image": "creamy-cacao",
+      "ingredients": [
+        { "item": "Avocado", "amount": "½ stuks" },
+        { "item": "Cacaopoeder", "amount": "1 eetlepel" },
+        { "item": "Slagroom", "amount": "100 ml" },
+        { "item": "Water", "amount": "100 ml" },
+        { "item": "Stevia of zout", "amount": "optioneel" }
+      ],
+      "instructions": "Doe alle ingrediënten in de NutriBullet. Blend tot een gladde, romige shake."
     }
   ]
 }
