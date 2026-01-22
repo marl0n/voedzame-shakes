@@ -430,7 +430,6 @@ button, a, input, select, textarea {
 /* ===== DETAIL VIEW ===== */
 #detail-view {
     padding: 0;
-    padding-bottom: 40px;
     /* Break out of .main container to go full-width */
     margin-left: calc(-1 * var(--spacing-6));
     margin-right: calc(-1 * var(--spacing-6));
@@ -498,7 +497,7 @@ button, a, input, select, textarea {
     display: flex;
     align-items: center;
     gap: var(--spacing-3);
-    padding: 0 var(--spacing-4);
+    padding: 0 var(--spacing-4) 0 72px; /* Left padding for back button */
     opacity: 0; /* JS controls this */
     pointer-events: none; /* JS controls this */
     will-change: opacity;
